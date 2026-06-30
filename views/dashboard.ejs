@@ -1,0 +1,62 @@
+<% title = 'Dashboard'; currentPage = 'dashboard'; %>
+
+<div class="dashboard-header fade-in">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h1><i class="fas fa-user"></i> Xin chào, <%= session.username || 'User' %>!</h1>
+            <p>Chào mừng bạn đến với SaiGonPhoenix. Quản lý đặt xe của bạn tại đây.</p>
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+            <a href="/booking" class="btn btn-hero">
+                <i class="fas fa-calendar-plus me-2"></i> Đặt xe mới
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4 slide-up">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Tổng chuyến</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Đang chờ</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Đã xác nhận</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-star"></i></div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Hoàn thành</div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking History -->
+<div class="form-card slide-up">
+    <div class="card-header">
+        <h5><i class="fas fa-list me-2"></i> Lịch sử đặt xe</h5>
+    </div>
+    <div class="card-body text-center py-5">
+        <i class="fas fa-car fa-4x text-muted mb-3" style="opacity: 0.3;"></i>
+        <h5 class="text-muted">Bạn chưa có đặt xe nào</h5>
+        <p class="text-muted">Hãy đặt xe ngay để trải nghiệm dịch vụ của chúng tôi</p>
+        <a href="/booking" class="btn btn-hero mt-2">
+            <i class="fas fa-calendar-plus me-2"></i> Đặt xe ngay
+        </a>
+    </div>
+</div>

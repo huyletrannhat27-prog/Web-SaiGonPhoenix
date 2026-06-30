@@ -1,0 +1,40 @@
+<% title = 'Đăng nhập'; currentPage = 'login'; %>
+
+<div class="row justify-content-center fade-in">
+    <div class="col-md-5 col-lg-4">
+        <div class="auth-card">
+            <div class="card-header">
+                <h4><i class="fas fa-sign-in-alt"></i> Đăng nhập</h4>
+                <p>Chào mừng bạn quay trở lại</p>
+            </div>
+            <div class="card-body">
+                <form action="/login" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input type="email" name="email" class="form-control" 
+                               placeholder="admin@saigonphoenix.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Mật khẩu
+                        </label>
+                        <input type="password" name="password" class="form-control" 
+                               placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <span class="text-muted">Chưa có tài khoản?</span>
+                    <a href="/register" class="auth-link">Đăng ký ngay</a>
+                </div>
+                <div class="mt-2 text-center">
+                    <small class="text-muted">Tài khoản demo: admin@saigonphoenix.com / admin123</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

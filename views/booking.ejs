@@ -1,0 +1,121 @@
+<% title = 'Đặt xe'; currentPage = 'booking'; %>
+
+<div class="form-card fade-in">
+    <div class="card-header">
+        <h4><i class="fas fa-calendar-plus"></i> Đặt xe đón tiễn sân bay</h4>
+        <p>Vui lòng điền đầy đủ thông tin để chúng tôi phục vụ bạn tốt nhất</p>
+    </div>
+    <div class="card-body">
+        <form action="/booking" method="POST">
+            <div class="row">
+                <!-- Cột trái -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-plane"></i> Sân bay <span class="text-danger">*</span>
+                        </label>
+                        <select name="airport" class="form-select" required>
+                            <option value="">-- Chọn sân bay --</option>
+                            <option value="Sân bay Tân Sơn Nhất (SGN)">✈️ Tân Sơn Nhất (SGN) - TP.HCM</option>
+                            <option value="Sân bay Nội Bài (HAN)">✈️ Nội Bài (HAN) - Hà Nội</option>
+                            <option value="Sân bay Cam Ranh (CXR)">✈️ Cam Ranh (CXR) - Nha Trang</option>
+                            <option value="Sân bay Đà Nẵng (DAD)">✈️ Đà Nẵng (DAD) - Đà Nẵng</option>
+                            <option value="Sân bay Cần Thơ (VCA)">✈️ Cần Thơ (VCA) - Cần Thơ</option>
+                            <option value="Sân bay Phú Quốc (PQC)">✈️ Phú Quốc (PQC) - Phú Quốc</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Họ tên <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="customerName" class="form-control" 
+                               placeholder="Nhập họ tên của bạn" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-phone"></i> Số điện thoại <span class="text-danger">*</span>
+                        </label>
+                        <input type="tel" name="phone" class="form-control" 
+                               placeholder="0912 345 678" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-clock"></i> Ngày giờ đón <span class="text-danger">*</span>
+                        </label>
+                        <input type="datetime-local" name="bookingDate" class="form-control" required>
+                    </div>
+                </div>
+                
+                <!-- Cột phải -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-car"></i> Loại xe
+                        </label>
+                        <select name="vehicleType" class="form-select">
+                            <option value="4 cho">🚗 4 chỗ (Toyota Vios, ...)</option>
+                            <option value="7 cho">🚙 7 chỗ (Toyota Innova, ...)</option>
+                            <option value="9 cho">🚐 9 chỗ (Kia Carnival, ...)</option>
+                            <option value="9 cho vip">⭐ 9 chỗ VIP (Sedona, ...)</option>
+                            <option value="16 cho">🚌 16 chỗ (Ford Transit, ...)</option>
+                            <option value="29 cho">🚌 29 chỗ (Hyundai Solati, ...)</option>
+                            <option value="45 cho">🚌 45 chỗ (Thaco, ...)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-users"></i> Số người
+                        </label>
+                        <input type="number" name="passengerCount" class="form-control" 
+                               min="1" value="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Nơi đón
+                        </label>
+                        <input type="text" name="pickupLocation" class="form-control" 
+                               placeholder="Khách sạn, địa chỉ cụ thể...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Nơi trả
+                        </label>
+                        <input type="text" name="dropoffLocation" class="form-control" 
+                               placeholder="Khách sạn, địa chỉ cụ thể...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-ticket-alt"></i> Mã chuyến bay
+                        </label>
+                        <input type="text" name="flightNumber" class="form-control" 
+                               placeholder="VD: VN123, VJ456, ...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-suitcase"></i> Số hành lý
+                        </label>
+                        <input type="number" name="luggageCount" class="form-control" 
+                               min="0" value="0">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Note -->
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="fas fa-sticky-note"></i> Ghi chú thêm
+                </label>
+                <textarea name="note" class="form-control" rows="3" 
+                          placeholder="Yêu cầu đặc biệt (nếu có)..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-check-circle"></i> Đặt xe ngay
+            </button>
+            
+            <div class="mt-3 text-center text-muted small">
+                <i class="fas fa-lock me-1"></i> Thông tin của bạn được bảo mật tuyệt đối
+            </div>
+        </form>
+    </div>
+</div>

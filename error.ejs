@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lỗi - SaiGonPhoenix</title>
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 100px 20px;
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
+        }
+        .error-message {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-container">
+            <div class="error-icon">⚠️</div>
+            <h1>Đã có lỗi xảy ra</h1>
+            <p class="error-message"><%= message || 'Vui lòng thử lại sau' %></p>
+            <a href="/" class="btn btn-primary">Về trang chủ</a>
+        </div>
+    </div>
+</body>
+</html>

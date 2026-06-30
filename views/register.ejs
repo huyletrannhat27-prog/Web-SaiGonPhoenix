@@ -1,0 +1,58 @@
+<% title = 'Đăng ký'; currentPage = 'register'; %>
+
+<div class="row justify-content-center fade-in">
+    <div class="col-md-6 col-lg-5">
+        <div class="auth-card">
+            <div class="card-header">
+                <h4><i class="fas fa-user-plus"></i> Đăng ký</h4>
+                <p>Tạo tài khoản để trải nghiệm dịch vụ</p>
+            </div>
+            <div class="card-body">
+                <form action="/register" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i> Tên đăng nhập
+                        </label>
+                        <input type="text" name="username" class="form-control" 
+                               placeholder="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input type="email" name="email" class="form-control" 
+                               placeholder="example@email.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-phone"></i> Số điện thoại
+                        </label>
+                        <input type="tel" name="phone" class="form-control" 
+                               placeholder="0912 345 678">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i> Mật khẩu
+                        </label>
+                        <input type="password" name="password" class="form-control" 
+                               placeholder="••••••••" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-check-circle"></i> Xác nhận mật khẩu
+                        </label>
+                        <input type="password" name="confirmPassword" class="form-control" 
+                               placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-user-plus"></i> Đăng ký
+                    </button>
+                </form>
+                <div class="mt-4 text-center">
+                    <span class="text-muted">Đã có tài khoản?</span>
+                    <a href="/login" class="auth-link">Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
