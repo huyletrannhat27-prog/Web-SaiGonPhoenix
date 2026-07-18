@@ -14,6 +14,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/SaiGonPhoenix';
 
+// Render terminates HTTPS at its reverse proxy. Trust the first proxy so
+// secure session cookies are issued correctly in production.
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
+
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
