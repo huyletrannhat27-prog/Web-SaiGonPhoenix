@@ -1,4 +1,4 @@
-<% title = 'Đăng ký'; currentPage = 'register'; %>
+<% layout('layout') -%>
 
 <div class="row justify-content-center fade-in">
     <div class="col-md-6 col-lg-5">
@@ -8,27 +8,28 @@
                 <p>Tạo tài khoản để trải nghiệm dịch vụ</p>
             </div>
             <div class="card-body">
+                <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
                 <form action="/register" method="POST">
                     <div class="mb-3">
                         <label class="form-label">
                             <i class="fas fa-user"></i> Tên đăng nhập
                         </label>
                         <input type="text" name="username" class="form-control" 
-                               placeholder="username" required>
+                               value="<%= form.username || '' %>" placeholder="Nguyễn Văn An" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">
                             <i class="fas fa-envelope"></i> Email
                         </label>
                         <input type="email" name="email" class="form-control" 
-                               placeholder="example@email.com" required>
+                               value="<%= form.email || '' %>" placeholder="example@email.com" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">
                             <i class="fas fa-phone"></i> Số điện thoại
                         </label>
                         <input type="tel" name="phone" class="form-control" 
-                               placeholder="0912 345 678">
+                               value="<%= form.phone || '' %>" placeholder="0912 345 678" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">

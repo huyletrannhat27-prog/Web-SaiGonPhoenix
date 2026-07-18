@@ -76,6 +76,20 @@ a:hover {
     color: var(--primary);
 }
 
+.navbar-custom .brand-logo-link {
+    padding: 0;
+    line-height: 1;
+}
+
+.navbar-custom .brand-logo {
+    display: block;
+    width: 265px;
+    height: 68px;
+    object-fit: contain;
+    object-position: center;
+    border-radius: 6px;
+}
+
 .navbar-custom .nav-link {
     color: rgba(255,255,255,0.85) !important;
     font-weight: 500;
@@ -613,6 +627,11 @@ a:hover {
     .navbar-custom .navbar-brand {
         font-size: 20px;
     }
+
+    .navbar-custom .brand-logo {
+        width: 190px;
+        height: 52px;
+    }
     
     .hero-section {
         padding: 50px 0;
@@ -752,3 +771,35 @@ a:hover {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+.vehicle-card {
+    background: var(--white);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+}
+.vehicle-card img { width: 100%; height: 165px; object-fit: cover; }
+.vehicle-option { cursor: pointer; display: block; }
+.vehicle-option input { position: absolute; opacity: 0; }
+.vehicle-option input:checked + .vehicle-card { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(233,69,96,.12); transform: translateY(-3px); }
+.table th { white-space: nowrap; background: #f8f9fa; padding: 14px; }
+.table td { padding: 14px; }
+.status { display: inline-block; padding: 6px 10px; border-radius: 50px; font-weight: 700; font-size: 12px; white-space: nowrap; }
+.status-pending { background: #fff3cd; color: #856404; }
+.status-confirmed { background: #cfe2ff; color: #084298; }
+.status-completed { background: #d1e7dd; color: #0f5132; }
+.status-cancelled { background: #e2e3e5; color: #41464b; }
+.payment-option { display: block; cursor: pointer; height: 100%; }
+.payment-option input { position: absolute; opacity: 0; }
+.payment-option span { display: block; height: 100%; padding: 18px; border: 2px solid #e8ecf1; border-radius: var(--radius-sm); transition: var(--transition); }
+.payment-option strong, .payment-option small { display: block; }
+.payment-option small { color: var(--text-muted); margin-top: 5px; }
+.payment-option input:checked + span { border-color: var(--primary); background: rgba(233,69,96,.06); box-shadow: 0 0 0 3px rgba(233,69,96,.1); }
+.qr-payment { max-width: 340px; width: 100%; border-radius: 16px; border: 1px solid #eee; }
+.bank-box { background: #f8f9fa; border-radius: var(--radius-sm); padding: 18px; }
+.image-library-card { border: 1px solid #e8ecf1; border-radius: var(--radius-sm); overflow: hidden; background: #fff; height: 100%; }
+.image-library-card img { width: 100%; height: 145px; object-fit: cover; }
+.admin-image-preview { width: 220px; height: 130px; object-fit: cover; border-radius: 10px; border: 2px solid var(--primary); }
+.vehicle-admin-thumb { width: 92px; height: 64px; object-fit: cover; border-radius: 8px; flex: 0 0 auto; }

@@ -9,7 +9,7 @@ const vehicleSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['4 cho', '7 cho', '9 cho', 'Sedona', '16 cho', '29 cho', '45 cho', '9 cho vip']
+        enum: ['4 cho', '7 cho', '9 cho', '16 cho', '29 cho', '45 cho', '9 cho vip']
     },
     price: {
         type: Number,

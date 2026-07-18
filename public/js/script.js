@@ -21,12 +21,48 @@ document.addEventListener('DOMContentLoaded', function() {
         const now = new Date();
         // Set minimum to now + 2 hours
         const minDate = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-        const localDateTime = minDate.toISOString().slice(0, 16);
+        const localDateTime = new Date(minDate.getTime() - minDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
         dateInput.min = localDateTime;
         
         // Set default value to now + 3 hours
         const defaultDate = new Date(now.getTime() + 3 * 60 * 60 * 1000);
-        dateInput.value = defaultDate.toISOString().slice(0, 16);
+        if (!dateInput.value) dateInput.value = new Date(defaultDate.getTime() - defaultDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    }
+
+    const bookingDatePicker = dateInput;
+    const availabilityMessage = bookingDatePicker ? document.createElement('div') : null;
+    const vehicleCards = Array.from(document.querySelectorAll('.vehicle-option'));
+    if (availabilityMessage && vehicleCards.length) {
+        availabilityMessage.className = 'small mt-2';
+        bookingDatePicker.parentElement.appendChild(availabilityMessage);
+        async function refreshVehicleAvailability() {
+            if (!bookingDatePicker.value) return;
+            try {
+                const response = await fetch(`/api/vehicles?bookingDate=${encodeURIComponent(bookingDatePicker.value)}`);
+                if (!response.ok) throw new Error('availability');
+                const availableIds = new Set((await response.json()).map(vehicle => String(vehicle._id)));
+                let visibleCount = 0;
+                vehicleCards.forEach(card => {
+                    const id = card.querySelector('input[name="vehicleId"]')?.value;
+                    const isAvailable = availableIds.has(id);
+                    const column = card.closest('[class*="col-"]');
+                    if (column) column.classList.toggle('d-none', !isAvailable);
+                    if (isAvailable) visibleCount++;
+                    if (!isAvailable) { const radio = card.querySelector('input[name="vehicleId"]'); if (radio) radio.checked = false; }
+                });
+                availabilityMessage.className = `small mt-2 ${visibleCount ? 'text-success' : 'text-danger'}`;
+                availabilityMessage.textContent = visibleCount ? `${visibleCount} xe còn trống trong khung giờ này.` : 'Không còn xe trống trong khung giờ này.';
+                if (!document.querySelector('input[name="vehicleId"]:checked')) {
+                    const first = vehicleCards.find(card => !card.closest('[class*="col-"]')?.classList.contains('d-none'))?.querySelector('input[name="vehicleId"]');
+                    if (first) first.checked = true;
+                }
+            } catch (error) {
+                availabilityMessage.className = 'small mt-2 text-warning';
+                availabilityMessage.textContent = 'Không kiểm tra được tình trạng xe, hệ thống sẽ kiểm tra lại khi đặt.';
+            }
+        }
+        bookingDatePicker.addEventListener('change', refreshVehicleAvailability);
+        refreshVehicleAvailability();
     }
     
     // ===== 3. FORM VALIDATION =====
@@ -192,4 +228,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     console.log('🚀 SaiGonPhoenix loaded successfully!');
+
+    const vehicleImageAsset = document.getElementById('vehicleImageAsset');
+    const vehicleImagePreview = document.getElementById('vehicleImagePreview');
+    if (vehicleImageAsset && vehicleImagePreview) {
+        vehicleImageAsset.addEventListener('change', function() {
+            const imageUrl = this.options[this.selectedIndex]?.dataset.imageUrl;
+            if (imageUrl) {
+                vehicleImagePreview.src = imageUrl;
+                vehicleImagePreview.classList.remove('d-none');
+            } else {
+                vehicleImagePreview.removeAttribute('src');
+                vehicleImagePreview.classList.add('d-none');
+            }
+        });
+    }
 });

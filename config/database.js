@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/SaiGonPhoenix';
-        
-        await mongoose.connect(mongoURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/SaiGonPhoenix';
+        await mongoose.connect(mongoURI);
         
         console.log('✅ MongoDB connected successfully!');
         console.log(`📊 Database: ${mongoose.connection.name}`);
@@ -15,7 +11,7 @@ const connectDB = async () => {
         
     } catch (error) {
         console.error('❌ MongoDB connection failed:', error.message);
-        process.exit(1);
+        throw error;
     }
 };
 

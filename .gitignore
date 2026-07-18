@@ -1,0 +1,8 @@
+node_modules/
+.env
+npm-debug.log*
+coverage/
+server-output.log
+server-error.log
+public/uploads/vehicles/*
+!public/uploads/vehicles/.gitkeep

@@ -11,6 +11,12 @@ const bookingSchema = new mongoose.Schema({
         ref: 'Vehicle',
         required: true
     },
+    vehicleSnapshot: {
+        name: { type: String, default: 'Xe không xác định' },
+        type: { type: String, default: '' },
+        image: { type: String, default: '' },
+        capacity: { type: Number, default: 0 }
+    },
     airport: {
         type: String,
         required: true,
@@ -19,7 +25,8 @@ const bookingSchema = new mongoose.Schema({
             'Sân bay Nội Bài (HAN)',
             'Sân bay Cam Ranh (CXR)',
             'Sân bay Đà Nẵng (DAD)',
-            'Sân bay Cần Thơ (VCA)'
+            'Sân bay Cần Thơ (VCA)',
+            'Sân bay Phú Quốc (PQC)'
         ]
     },
     customerInfo: {
@@ -35,10 +42,20 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    tripType: { type: String, enum: ['airport-pickup', 'airport-dropoff'], default: 'airport-pickup' },
+    note: { type: String, trim: true, maxlength: 500, default: '' },
     totalPrice: {
         type: Number,
         required: true,
         min: 0
+    },
+    payment: {
+        option: { type: String, enum: ['deposit', 'full'], default: 'deposit' },
+        requiredAmount: { type: Number, default: 0, min: 0 },
+        paidAmount: { type: Number, default: 0, min: 0 },
+        status: { type: String, enum: ['awaiting_payment', 'pending_review', 'partial', 'paid'], default: 'awaiting_payment' },
+        submittedAt: Date,
+        confirmedAt: Date
     },
     status: {
         type: String,
