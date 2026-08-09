@@ -42,6 +42,7 @@ const bookingSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    originalBookingDate: { type: Date },
     tripType: { type: String, enum: ['airport-pickup', 'airport-dropoff'], default: 'airport-pickup' },
     note: { type: String, trim: true, maxlength: 500, default: '' },
     totalPrice: {
@@ -59,8 +60,22 @@ const bookingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'completed', 'cancelled'],
+        enum: ['pending', 'confirmed', 'completed', 'cancelled', 'expired'],
         default: 'pending'
+    },
+    autoCompletedAt: Date,
+    flightTracking: {
+        provider: { type: String, default: 'Flightradar24' },
+        fr24Id: { type: String, default: '' },
+        status: { type: String, enum: ['not_requested', 'waiting', 'en_route', 'landed', 'not_found', 'error'], default: 'not_requested' },
+        origin: { type: String, default: '' },
+        destination: { type: String, default: '' },
+        estimatedArrival: Date,
+        actualTakeoff: Date,
+        actualLanding: Date,
+        lastCheckedAt: Date,
+        dataExpiresAt: Date,
+        message: { type: String, default: '' }
     },
     socialApps: {
         whatsapp: { type: String, default: '' },

@@ -1,0 +1,24 @@
+<% layout('layout') -%>
+<% const vehicleName = booking.vehicle?.name || booking.vehicleSnapshot?.name || 'Xe đã phục vụ'; const driverName = booking.vehicle?.driver?.username || 'Tài xế phụ trách'; %>
+<section class="review-form-shell" data-i18n-scope>
+    <div class="review-form-hero">
+        <span class="section-kicker" data-i18n="completed_trip">CHUYẾN ĐI ĐÃ HOÀN THÀNH</span>
+        <h1 data-i18n="trip_review">Đánh giá chuyến đi</h1>
+        <p><strong><%= vehicleName %></strong> · <%= new Date(booking.bookingDate).toLocaleString('vi-VN') %></p>
+    </div>
+    <% if (review) { %>
+        <div class="review-thankyou"><i class="fa-solid fa-circle-check"></i><h2 data-i18n="review_recorded">Đánh giá đã được ghi nhận</h2><p data-i18n="review_thanks">Cảm ơn bạn đã giúp SaiGonPhoenix phục vụ tốt hơn.</p><a class="btn btn-primary" href="/reviews" data-i18n="read_reviews">Đọc các đánh giá</a></div>
+    <% } else { %>
+        <form class="review-form-card" method="post" action="/bookings/<%= booking._id %>/review" enctype="multipart/form-data" data-review-form>
+            <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+            <div class="review-rating-grid">
+                <fieldset class="rating-field"><legend><span data-i18n="driver_review">Đánh giá tài xế</span><small><%= driverName %></small></legend><div class="star-rating" aria-label="Điểm tài xế"><% [5,4,3,2,1].forEach(score => { %><input type="radio" id="driver-<%= score %>" name="driverRating" value="<%= score %>" <%= String(form.driverRating) === String(score) ? 'checked' : '' %> required><label for="driver-<%= score %>" title="<%= score %> sao"><i class="fa-solid fa-star"></i></label><% }) %></div><output data-rating-output>Chưa chọn</output></fieldset>
+                <fieldset class="rating-field"><legend><span data-i18n="trip_rating">Đánh giá chuyến đi</span><small data-i18n="trip_rating_hint">Đúng giờ, an toàn và trải nghiệm chung</small></legend><div class="star-rating" aria-label="Điểm chuyến đi"><% [5,4,3,2,1].forEach(score => { %><input type="radio" id="trip-<%= score %>" name="tripRating" value="<%= score %>" <%= String(form.tripRating) === String(score) ? 'checked' : '' %> required><label for="trip-<%= score %>" title="<%= score %> sao"><i class="fa-solid fa-star"></i></label><% }) %></div><output data-rating-output>Chưa chọn</output></fieldset>
+            </div>
+            <label class="review-comment-label"><span data-i18n="comment">Nhận xét của bạn</span><textarea class="form-control" name="comment" rows="5" minlength="10" maxlength="2000" required placeholder="Điều gì khiến bạn hài lòng hoặc cần cải thiện?" data-i18n-placeholder="comment_placeholder"><%= form.comment || '' %></textarea><small><span data-review-count>0</span>/2000</small></label>
+            <label class="review-upload"><i class="fa-regular fa-images"></i><span><strong data-i18n="add_photos">Thêm ảnh chuyến đi</strong><small data-i18n="photo_limit">Tối đa 4 ảnh JPG, PNG, WEBP · mỗi ảnh 5 MB</small></span><input type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple data-review-images></label>
+            <div class="review-image-preview" data-review-preview></div>
+            <div class="review-form-actions"><a class="btn btn-outline-secondary" href="/bookings/<%= booking._id %>" data-i18n="back">Quay lại</a><button class="btn btn-danger" type="submit"><i class="fa-solid fa-paper-plane"></i> <span data-i18n="submit_review">Gửi đánh giá</span></button></div>
+        </form>
+    <% } %>
+</section>

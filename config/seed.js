@@ -2,6 +2,7 @@ const User = require('../models/User');
 const Vehicle = require('../models/Vehicle');
 const PaymentSettings = require('../models/PaymentSettings');
 const Booking = require('../models/Booking');
+const SiteSettings = require('../models/SiteSettings');
 
 const vehicles = [
     { name: 'Toyota Vios', type: '4 cho', price: 250000, capacity: 4, luggageCapacity: 2, description: 'Gọn gàng, tiết kiệm, phù hợp cá nhân và gia đình nhỏ.', images: ['https://images.unsplash.com/photo-1550355291-bbee04a92027?auto=format&fit=crop&w=900&q=80'] },
@@ -20,6 +21,11 @@ exports.seedInitialData = async () => {
     await PaymentSettings.findOneAndUpdate(
         { key: 'bank-transfer' },
         { $setOnInsert: { bankId: process.env.BANK_ID || '', bankName: process.env.BANK_NAME || '', accountNo: process.env.BANK_ACCOUNT_NO || '', accountName: process.env.BANK_ACCOUNT_NAME || '', qrTemplate: 'compact2' } },
+        { upsert: true }
+    );
+    await SiteSettings.findOneAndUpdate(
+        { key: 'support-contact' },
+        { $setOnInsert: { hotline: process.env.HOTLINE || '0900 000 000', zaloPhone: process.env.ZALO_PHONE || '', zaloUrl: process.env.ZALO_OA_URL || '', supportHours: 'Hỗ trợ 24/7', wechat: '', whatsapp: '', facebook: '', tiktok: '', line: '', viber: '', x: '', instagram: '', telegram: '', autoReplyEnabled: true, autoReplyTemplates: SiteSettings.defaultAutoReplyTemplates } },
         { upsert: true }
     );
     const legacyBookings = await Booking.find({ $or: [{ 'vehicleSnapshot.name': { $exists: false } }, { 'payment.requiredAmount': { $exists: false } }] }).populate('vehicle');

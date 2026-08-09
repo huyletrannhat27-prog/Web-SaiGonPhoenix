@@ -1,59 +1,17 @@
 <% layout('layout') -%>
-
-<div class="row justify-content-center fade-in">
-    <div class="col-md-6 col-lg-5">
-        <div class="auth-card">
-            <div class="card-header">
-                <h4><i class="fas fa-user-plus"></i> Đăng ký</h4>
-                <p>Tạo tài khoản để trải nghiệm dịch vụ</p>
-            </div>
-            <div class="card-body">
-                <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
-                <form action="/register" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-user"></i> Tên đăng nhập
-                        </label>
-                        <input type="text" name="username" class="form-control" 
-                               value="<%= form.username || '' %>" placeholder="Nguyễn Văn An" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
-                        <input type="email" name="email" class="form-control" 
-                               value="<%= form.email || '' %>" placeholder="example@email.com" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-phone"></i> Số điện thoại
-                        </label>
-                        <input type="tel" name="phone" class="form-control" 
-                               value="<%= form.phone || '' %>" placeholder="0912 345 678" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-lock"></i> Mật khẩu
-                        </label>
-                        <input type="password" name="password" class="form-control" 
-                               placeholder="••••••••" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-check-circle"></i> Xác nhận mật khẩu
-                        </label>
-                        <input type="password" name="confirmPassword" class="form-control" 
-                               placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-user-plus"></i> Đăng ký
-                    </button>
-                </form>
-                <div class="mt-4 text-center">
-                    <span class="text-muted">Đã có tài khoản?</span>
-                    <a href="/login" class="auth-link">Đăng nhập</a>
-                </div>
-            </div>
+<div class="auth-shell auth-register-shell fade-in">
+    <section class="auth-aside"><span class="eyebrow"><i class="fa-solid fa-user-check"></i> Tạo tài khoản miễn phí</span><h1>Một tài khoản,<br>mọi chuyến đi.</h1><p>Thông tin của bạn được lưu an toàn để mỗi lần đặt xe chỉ còn vài thao tác.</p><div class="auth-benefits"><span><i class="fa-solid fa-check"></i> Đặt xe nhanh, rõ giá</span><span><i class="fa-solid fa-check"></i> Theo dõi trạng thái đơn</span><span><i class="fa-solid fa-check"></i> Thanh toán bằng VietQR</span></div></section>
+    <section class="auth-card modern-auth-card">
+        <div class="card-body"><div class="auth-heading"><span class="auth-icon"><i class="fa-solid fa-user-plus"></i></span><h2>Tạo tài khoản</h2><p>Bắt đầu hành trình chỉ trong một phút</p></div>
+            <% if (error) { %><div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation me-2"></i><%= error %></div><% } %>
+            <form action="/register" method="post">
+                <div class="row g-3"><div class="col-md-6"><label class="modern-field"><span>Họ và tên</span><div><i class="fa-regular fa-user"></i><input type="text" name="username" value="<%= form.username || '' %>" placeholder="Nguyễn Văn An" autocomplete="name" required></div></label></div><div class="col-md-6"><label class="modern-field"><span>Số điện thoại</span><div><i class="fa-solid fa-phone"></i><input type="tel" name="phone" value="<%= form.phone || '' %>" placeholder="0912 345 678" autocomplete="tel" required></div></label></div></div>
+                <label class="modern-field"><span>Email</span><div><i class="fa-regular fa-envelope"></i><input type="email" name="email" value="<%= form.email || '' %>" placeholder="ban@example.com" autocomplete="email" required></div></label>
+                <label class="modern-field"><span>Mật khẩu <small class="password-strength"></small></span><div><i class="fa-solid fa-lock"></i><input type="password" name="password" minlength="6" placeholder="Tối thiểu 6 ký tự" autocomplete="new-password" required><button type="button" class="password-toggle" data-password-toggle aria-label="Hiện mật khẩu"><i class="fa-regular fa-eye"></i></button></div></label>
+                <label class="modern-field"><span>Xác nhận mật khẩu <small class="confirm-message"></small></span><div><i class="fa-solid fa-shield-halved"></i><input type="password" name="confirmPassword" minlength="6" placeholder="Nhập lại mật khẩu" autocomplete="new-password" required><button type="button" class="password-toggle" data-password-toggle aria-label="Hiện mật khẩu"><i class="fa-regular fa-eye"></i></button></div></label>
+                <button type="submit" class="btn-submit mt-2">Tạo tài khoản <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+            <div class="auth-switch">Đã có tài khoản? <a href="/login">Đăng nhập</a></div>
         </div>
-    </div>
+    </section>
 </div>

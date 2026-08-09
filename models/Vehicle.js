@@ -9,7 +9,7 @@ const vehicleSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['4 cho', '7 cho', '9 cho', '16 cho', '29 cho', '45 cho', '9 cho vip']
+        enum: ['4 cho', '7 cho', '9 cho', '16 cho', '26 cho', '29 cho', '45 cho', '9 cho vip', 'limousine']
     },
     price: {
         type: Number,
@@ -32,6 +32,11 @@ const vehicleSchema = new mongoose.Schema({
     description: {
         type: String,
         default: ''
+    },
+    driver: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     },
     isAvailable: {
         type: Boolean,

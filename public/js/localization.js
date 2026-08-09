@@ -1,0 +1,292 @@
+(function () {
+    'use strict';
+    const originalDocumentTitle = document.title;
+
+    const en = {
+        safe_booking: 'Safe booking · Clear prices · Fast confirmation', home: 'Home', book_car: 'Book a car', reviews: 'Reviews', about: 'About us', logout: 'Sign out', login: 'Sign in', register: 'Register', explore: 'Explore', support: 'Support', forgot_password: 'Forgot password', completed_trip: 'COMPLETED TRIP', trip_review: 'Review your trip', review_recorded: 'Your review has been recorded', review_thanks: 'Thank you for helping SaiGonPhoenix improve.', read_reviews: 'Read reviews', driver_review: 'Driver rating', trip_rating: 'Trip rating', trip_rating_hint: 'Punctuality, safety and overall experience', comment: 'Your feedback', comment_placeholder: 'What did you enjoy or what should we improve?', add_photos: 'Add trip photos', photo_limit: 'Up to 4 JPG, PNG or WEBP photos · 5 MB each', back: 'Back', submit_review: 'Submit review', customer_reviews: 'WHAT CUSTOMERS SAY', real_reviews: 'Reviews from real completed trips', review_transparency: 'Every review is linked to a completed booking.', satisfaction: 'Satisfied', overall_rating: 'Overall rating', verified_reviews: 'Verified reviews', no_reviews: 'No reviews yet', first_review: 'Reviews from completed trips will appear here.', verified_trip: 'Verified trip', driver: 'Driver', trip: 'Trip'
+    };
+    const dictionaries = {
+        en,
+        'zh-CN': { safe_booking:'安心订车 · 价格透明 · 快速确认',home:'首页',book_car:'预订车辆',reviews:'评价',about:'关于我们',logout:'退出登录',login:'登录',register:'注册',explore:'探索',support:'支持',forgot_password:'忘记密码',completed_trip:'行程已完成',trip_review:'评价您的行程',review_recorded:'您的评价已记录',review_thanks:'感谢您帮助 SaiGonPhoenix 改进服务。',read_reviews:'查看评价',driver_review:'司机评分',trip_rating:'行程评分',trip_rating_hint:'准时、安全和整体体验',comment:'您的评价',comment_placeholder:'您满意什么，或我们应改进什么？',add_photos:'添加行程照片',photo_limit:'最多 4 张 JPG、PNG 或 WEBP 图片 · 每张 5 MB',back:'返回',submit_review:'提交评价',customer_reviews:'客户评价',real_reviews:'真实已完成行程的评价',review_transparency:'每条评价都来自已完成的订单。',satisfaction:'满意度',overall_rating:'综合评分',verified_reviews:'已验证评价',no_reviews:'暂无评价',first_review:'已完成行程的评价将显示在这里。',verified_trip:'已验证行程',driver:'司机',trip:'行程' },
+        ko: { safe_booking:'안심 예약 · 투명한 가격 · 빠른 확정',home:'홈',book_car:'차량 예약',reviews:'후기',about:'회사 소개',logout:'로그아웃',login:'로그인',register:'회원가입',explore:'둘러보기',support:'고객 지원',forgot_password:'비밀번호 찾기',completed_trip:'완료된 여행',trip_review:'여행 평가',review_recorded:'평가가 등록되었습니다',review_thanks:'SaiGonPhoenix의 서비스 개선에 도움을 주셔서 감사합니다.',read_reviews:'후기 보기',driver_review:'기사 평가',trip_rating:'여행 평가',trip_rating_hint:'시간 준수, 안전 및 전반적인 경험',comment:'고객 의견',comment_placeholder:'좋았던 점이나 개선할 점을 알려주세요.',add_photos:'여행 사진 추가',photo_limit:'JPG, PNG, WEBP 최대 4장 · 장당 5MB',back:'뒤로',submit_review:'평가 보내기',customer_reviews:'고객 후기',real_reviews:'실제 완료된 여행 후기',review_transparency:'모든 후기는 완료된 예약과 연결됩니다.',satisfaction:'만족도',overall_rating:'종합 평점',verified_reviews:'인증된 후기',no_reviews:'아직 후기가 없습니다',first_review:'완료된 여행의 후기가 여기에 표시됩니다.',verified_trip:'인증된 여행',driver:'기사',trip:'여행' },
+        ja: {safe_booking:'安心予約・明確な料金・迅速な確定',home:'ホーム',book_car:'車を予約',reviews:'口コミ',about:'会社案内',logout:'ログアウト',login:'ログイン',register:'登録',explore:'見る',support:'サポート',forgot_password:'パスワードを忘れた',completed_trip:'完了した旅行',trip_review:'旅行を評価',read_reviews:'口コミを見る',driver_review:'ドライバー評価',trip_rating:'旅行評価',comment:'ご意見',add_photos:'写真を追加',back:'戻る',submit_review:'評価を送信',customer_reviews:'お客様の声',real_reviews:'実際の旅行の口コミ',satisfaction:'満足度',overall_rating:'総合評価',verified_reviews:'確認済み口コミ',no_reviews:'口コミはまだありません',verified_trip:'確認済み旅行',driver:'ドライバー',trip:'旅行'},
+        th: {safe_booking:'จองอย่างมั่นใจ · ราคาชัดเจน · ยืนยันรวดเร็ว',home:'หน้าแรก',book_car:'จองรถ',reviews:'รีวิว',about:'เกี่ยวกับเรา',logout:'ออกจากระบบ',login:'เข้าสู่ระบบ',register:'สมัครสมาชิก',explore:'สำรวจ',support:'ช่วยเหลือ',forgot_password:'ลืมรหัสผ่าน',completed_trip:'การเดินทางเสร็จสิ้น',trip_review:'รีวิวการเดินทาง',read_reviews:'อ่านรีวิว',driver_review:'คะแนนคนขับ',trip_rating:'คะแนนการเดินทาง',comment:'ความคิดเห็น',add_photos:'เพิ่มรูปภาพ',back:'ย้อนกลับ',submit_review:'ส่งรีวิว',customer_reviews:'เสียงจากลูกค้า',real_reviews:'รีวิวจากการเดินทางจริง',satisfaction:'ความพึงพอใจ',overall_rating:'คะแนนรวม',verified_reviews:'รีวิวที่ยืนยันแล้ว',no_reviews:'ยังไม่มีรีวิว',verified_trip:'การเดินทางที่ยืนยันแล้ว',driver:'คนขับ',trip:'การเดินทาง'},
+        fr: {safe_booking:'Réservation sûre · Prix clairs · Confirmation rapide',home:'Accueil',book_car:'Réserver',reviews:'Avis',about:'À propos',logout:'Déconnexion',login:'Connexion',register:'Créer un compte',explore:'Découvrir',support:'Assistance',forgot_password:'Mot de passe oublié',completed_trip:'TRAJET TERMINÉ',trip_review:'Évaluer le trajet',read_reviews:'Lire les avis',driver_review:'Note du chauffeur',trip_rating:'Note du trajet',comment:'Votre avis',add_photos:'Ajouter des photos',back:'Retour',submit_review:'Envoyer l’avis',customer_reviews:'AVIS CLIENTS',real_reviews:'Avis de trajets réels',satisfaction:'Satisfaction',overall_rating:'Note globale',verified_reviews:'Avis vérifiés',no_reviews:'Aucun avis',verified_trip:'Trajet vérifié',driver:'Chauffeur',trip:'Trajet'},
+        de: {safe_booking:'Sicher buchen · Klare Preise · Schnelle Bestätigung',home:'Startseite',book_car:'Auto buchen',reviews:'Bewertungen',about:'Über uns',logout:'Abmelden',login:'Anmelden',register:'Registrieren',explore:'Entdecken',support:'Hilfe',forgot_password:'Passwort vergessen',completed_trip:'FAHRT ABGESCHLOSSEN',trip_review:'Fahrt bewerten',read_reviews:'Bewertungen lesen',driver_review:'Fahrerbewertung',trip_rating:'Fahrtbewertung',comment:'Ihr Feedback',add_photos:'Fotos hinzufügen',back:'Zurück',submit_review:'Bewertung senden',customer_reviews:'KUNDENSTIMMEN',real_reviews:'Bewertungen echter Fahrten',satisfaction:'Zufriedenheit',overall_rating:'Gesamtbewertung',verified_reviews:'Verifizierte Bewertungen',no_reviews:'Noch keine Bewertungen',verified_trip:'Verifizierte Fahrt',driver:'Fahrer',trip:'Fahrt'},
+        es: {safe_booking:'Reserva segura · Precios claros · Confirmación rápida',home:'Inicio',book_car:'Reservar coche',reviews:'Reseñas',about:'Nosotros',logout:'Cerrar sesión',login:'Iniciar sesión',register:'Registrarse',explore:'Explorar',support:'Soporte',forgot_password:'Olvidé mi contraseña',completed_trip:'VIAJE COMPLETADO',trip_review:'Valorar el viaje',read_reviews:'Leer reseñas',driver_review:'Valoración del conductor',trip_rating:'Valoración del viaje',comment:'Tu opinión',add_photos:'Añadir fotos',back:'Volver',submit_review:'Enviar reseña',customer_reviews:'OPINIONES DE CLIENTES',real_reviews:'Reseñas de viajes reales',satisfaction:'Satisfacción',overall_rating:'Valoración general',verified_reviews:'Reseñas verificadas',no_reviews:'Aún no hay reseñas',verified_trip:'Viaje verificado',driver:'Conductor',trip:'Viaje'},
+        pt: {safe_booking:'Reserva segura · Preços claros · Confirmação rápida',home:'Início',book_car:'Reservar carro',reviews:'Avaliações',about:'Sobre nós',logout:'Sair',login:'Entrar',register:'Cadastrar',explore:'Explorar',support:'Suporte',forgot_password:'Esqueci a senha',completed_trip:'VIAGEM CONCLUÍDA',trip_review:'Avaliar viagem',read_reviews:'Ler avaliações',driver_review:'Avaliação do motorista',trip_rating:'Avaliação da viagem',comment:'Seu comentário',add_photos:'Adicionar fotos',back:'Voltar',submit_review:'Enviar avaliação',customer_reviews:'AVALIAÇÕES DOS CLIENTES',real_reviews:'Avaliações de viagens reais',satisfaction:'Satisfação',overall_rating:'Avaliação geral',verified_reviews:'Avaliações verificadas',no_reviews:'Ainda sem avaliações',verified_trip:'Viagem verificada',driver:'Motorista',trip:'Viagem'},
+        ru: {safe_booking:'Надёжное бронирование · Понятные цены · Быстрое подтверждение',home:'Главная',book_car:'Заказать авто',reviews:'Отзывы',about:'О нас',logout:'Выйти',login:'Войти',register:'Регистрация',explore:'Обзор',support:'Поддержка',forgot_password:'Забыли пароль',completed_trip:'ПОЕЗДКА ЗАВЕРШЕНА',trip_review:'Оценить поездку',read_reviews:'Читать отзывы',driver_review:'Оценка водителя',trip_rating:'Оценка поездки',comment:'Ваш отзыв',add_photos:'Добавить фото',back:'Назад',submit_review:'Отправить отзыв',customer_reviews:'ОТЗЫВЫ КЛИЕНТОВ',real_reviews:'Отзывы о реальных поездках',satisfaction:'Довольны',overall_rating:'Общая оценка',verified_reviews:'Проверенные отзывы',no_reviews:'Отзывов пока нет',verified_trip:'Подтверждённая поездка',driver:'Водитель',trip:'Поездка'},
+        it: {safe_booking:'Prenotazione sicura · Prezzi chiari · Conferma rapida',home:'Home',book_car:'Prenota auto',reviews:'Recensioni',about:'Chi siamo',logout:'Esci',login:'Accedi',register:'Registrati',explore:'Scopri',support:'Assistenza',forgot_password:'Password dimenticata',completed_trip:'VIAGGIO COMPLETATO',trip_review:'Valuta il viaggio',read_reviews:'Leggi recensioni',driver_review:'Valutazione autista',trip_rating:'Valutazione viaggio',comment:'Il tuo commento',add_photos:'Aggiungi foto',back:'Indietro',submit_review:'Invia recensione',customer_reviews:'RECENSIONI CLIENTI',real_reviews:'Recensioni di viaggi reali',satisfaction:'Soddisfazione',overall_rating:'Valutazione complessiva',verified_reviews:'Recensioni verificate',no_reviews:'Nessuna recensione',verified_trip:'Viaggio verificato',driver:'Autista',trip:'Viaggio'},
+        nl: {safe_booking:'Veilig boeken · Duidelijke prijzen · Snelle bevestiging',home:'Home',book_car:'Auto boeken',reviews:'Beoordelingen',about:'Over ons',logout:'Uitloggen',login:'Inloggen',register:'Registreren',explore:'Ontdek',support:'Ondersteuning',forgot_password:'Wachtwoord vergeten',completed_trip:'RIT VOLTOOID',trip_review:'Beoordeel uw rit',read_reviews:'Lees beoordelingen',driver_review:'Chauffeursbeoordeling',trip_rating:'Ritbeoordeling',comment:'Uw feedback',add_photos:'Foto’s toevoegen',back:'Terug',submit_review:'Beoordeling verzenden',customer_reviews:'KLANTBEOORDELINGEN',real_reviews:'Beoordelingen van echte ritten',satisfaction:'Tevredenheid',overall_rating:'Totale score',verified_reviews:'Geverifieerde beoordelingen',no_reviews:'Nog geen beoordelingen',verified_trip:'Geverifieerde rit',driver:'Chauffeur',trip:'Rit'},
+        ar: {safe_booking:'حجز آمن · أسعار واضحة · تأكيد سريع',home:'الرئيسية',book_car:'احجز سيارة',reviews:'التقييمات',about:'من نحن',logout:'تسجيل الخروج',login:'تسجيل الدخول',register:'إنشاء حساب',explore:'استكشف',support:'الدعم',forgot_password:'نسيت كلمة المرور',completed_trip:'اكتملت الرحلة',trip_review:'قيّم رحلتك',read_reviews:'قراءة التقييمات',driver_review:'تقييم السائق',trip_rating:'تقييم الرحلة',comment:'رأيك',add_photos:'إضافة صور',back:'رجوع',submit_review:'إرسال التقييم',customer_reviews:'آراء العملاء',real_reviews:'تقييمات رحلات حقيقية',satisfaction:'الرضا',overall_rating:'التقييم العام',verified_reviews:'تقييمات موثقة',no_reviews:'لا توجد تقييمات بعد',verified_trip:'رحلة موثقة',driver:'السائق',trip:'الرحلة'},
+        hi: {safe_booking:'सुरक्षित बुकिंग · स्पष्ट कीमत · तेज़ पुष्टि',home:'होम',book_car:'कार बुक करें',reviews:'समीक्षाएँ',about:'हमारे बारे में',logout:'लॉग आउट',login:'लॉग इन',register:'पंजीकरण',explore:'देखें',support:'सहायता',forgot_password:'पासवर्ड भूल गए',completed_trip:'यात्रा पूरी हुई',trip_review:'यात्रा की समीक्षा',read_reviews:'समीक्षाएँ पढ़ें',driver_review:'ड्राइवर रेटिंग',trip_rating:'यात्रा रेटिंग',comment:'आपकी राय',add_photos:'फ़ोटो जोड़ें',back:'वापस',submit_review:'समीक्षा भेजें',customer_reviews:'ग्राहकों की राय',real_reviews:'वास्तविक यात्राओं की समीक्षाएँ',satisfaction:'संतुष्टि',overall_rating:'कुल रेटिंग',verified_reviews:'सत्यापित समीक्षाएँ',no_reviews:'अभी कोई समीक्षा नहीं',verified_trip:'सत्यापित यात्रा',driver:'ड्राइवर',trip:'यात्रा'},
+        id: {safe_booking:'Pesan aman · Harga jelas · Konfirmasi cepat',home:'Beranda',book_car:'Pesan mobil',reviews:'Ulasan',about:'Tentang kami',logout:'Keluar',login:'Masuk',register:'Daftar',explore:'Jelajahi',support:'Dukungan',forgot_password:'Lupa kata sandi',completed_trip:'PERJALANAN SELESAI',trip_review:'Nilai perjalanan',read_reviews:'Baca ulasan',driver_review:'Penilaian pengemudi',trip_rating:'Penilaian perjalanan',comment:'Ulasan Anda',add_photos:'Tambah foto',back:'Kembali',submit_review:'Kirim ulasan',customer_reviews:'ULASAN PELANGGAN',real_reviews:'Ulasan perjalanan nyata',satisfaction:'Kepuasan',overall_rating:'Nilai keseluruhan',verified_reviews:'Ulasan terverifikasi',no_reviews:'Belum ada ulasan',verified_trip:'Perjalanan terverifikasi',driver:'Pengemudi',trip:'Perjalanan'},
+        ms: {safe_booking:'Tempahan selamat · Harga jelas · Pengesahan pantas',home:'Utama',book_car:'Tempah kereta',reviews:'Ulasan',about:'Tentang kami',logout:'Log keluar',login:'Log masuk',register:'Daftar',explore:'Terokai',support:'Sokongan',forgot_password:'Lupa kata laluan',completed_trip:'PERJALANAN SELESAI',trip_review:'Nilai perjalanan',read_reviews:'Baca ulasan',driver_review:'Penilaian pemandu',trip_rating:'Penilaian perjalanan',comment:'Ulasan anda',add_photos:'Tambah foto',back:'Kembali',submit_review:'Hantar ulasan',customer_reviews:'ULASAN PELANGGAN',real_reviews:'Ulasan perjalanan sebenar',satisfaction:'Kepuasan',overall_rating:'Penilaian keseluruhan',verified_reviews:'Ulasan disahkan',no_reviews:'Belum ada ulasan',verified_trip:'Perjalanan disahkan',driver:'Pemandu',trip:'Perjalanan'},
+        tl: {safe_booking:'Ligtas na booking · Malinaw na presyo · Mabilis na kumpirmasyon',home:'Home',book_car:'Mag-book ng sasakyan',reviews:'Mga review',about:'Tungkol sa amin',logout:'Mag-sign out',login:'Mag-sign in',register:'Magrehistro',explore:'Tuklasin',support:'Suporta',forgot_password:'Nakalimutan ang password',completed_trip:'TAPOS NA ANG BIYAHE',trip_review:'Suriin ang biyahe',read_reviews:'Basahin ang mga review',driver_review:'Rating ng driver',trip_rating:'Rating ng biyahe',comment:'Iyong komento',add_photos:'Magdagdag ng larawan',back:'Bumalik',submit_review:'Isumite ang review',customer_reviews:'SABI NG MGA CUSTOMER',real_reviews:'Mga review mula sa totoong biyahe',satisfaction:'Kasiyahan',overall_rating:'Kabuuang rating',verified_reviews:'Beripikadong review',no_reviews:'Wala pang review',verified_trip:'Beripikadong biyahe',driver:'Driver',trip:'Biyahe'},
+        km: {safe_booking:'កក់ដោយសុវត្ថិភាព · តម្លៃច្បាស់ · បញ្ជាក់រហ័ស',home:'ទំព័រដើម',book_car:'កក់រថយន្ត',reviews:'ការវាយតម្លៃ',about:'អំពីយើង',logout:'ចាកចេញ',login:'ចូល',register:'ចុះឈ្មោះ',explore:'ស្វែងយល់',support:'ជំនួយ',forgot_password:'ភ្លេចពាក្យសម្ងាត់',completed_trip:'ដំណើរបានបញ្ចប់',trip_review:'វាយតម្លៃដំណើរ',read_reviews:'អានការវាយតម្លៃ',driver_review:'វាយតម្លៃអ្នកបើកបរ',trip_rating:'វាយតម្លៃដំណើរ',comment:'មតិរបស់អ្នក',add_photos:'បន្ថែមរូបភាព',back:'ត្រឡប់',submit_review:'ផ្ញើការវាយតម្លៃ',customer_reviews:'មតិអតិថិជន',real_reviews:'ការវាយតម្លៃពីដំណើរពិត',satisfaction:'ពេញចិត្ត',overall_rating:'ពិន្ទុសរុប',verified_reviews:'ការវាយតម្លៃបានបញ្ជាក់',no_reviews:'មិនទាន់មានការវាយតម្លៃ',verified_trip:'ដំណើរបានបញ្ជាក់',driver:'អ្នកបើកបរ',trip:'ដំណើរ'},
+        lo: {safe_booking:'ຈອງປອດໄພ · ລາຄາຊັດເຈນ · ຢືນຢັນໄວ',home:'ໜ້າຫຼັກ',book_car:'ຈອງລົດ',reviews:'ຄຳຄິດເຫັນ',about:'ກ່ຽວກັບເຮົາ',logout:'ອອກຈາກລະບົບ',login:'ເຂົ້າລະບົບ',register:'ລົງທະບຽນ',explore:'ສຳຫຼວດ',support:'ຊ່ວຍເຫຼືອ',forgot_password:'ລືມລະຫັດຜ່ານ',completed_trip:'ການເດີນທາງສຳເລັດ',trip_review:'ປະເມີນການເດີນທາງ',read_reviews:'ອ່ານຄຳຄິດເຫັນ',driver_review:'ປະເມີນຄົນຂັບ',trip_rating:'ປະເມີນການເດີນທາງ',comment:'ຄຳຄິດເຫັນ',add_photos:'ເພີ່ມຮູບ',back:'ກັບຄືນ',submit_review:'ສົ່ງການປະເມີນ',customer_reviews:'ຄຳເຫັນລູກຄ້າ',real_reviews:'ການປະເມີນຈາກການເດີນທາງຈິງ',satisfaction:'ຄວາມພໍໃຈ',overall_rating:'ຄະແນນລວມ',verified_reviews:'ການປະເມີນຢືນຢັນ',no_reviews:'ຍັງບໍ່ມີການປະເມີນ',verified_trip:'ການເດີນທາງຢືນຢັນ',driver:'ຄົນຂັບ',trip:'ການເດີນທາງ'}
+    };
+
+    const viAdditions = { admin:'Quản trị',driver_trips:'Chuyến tài xế',my_trips:'Chuyến của tôi',footer_description:'Đồng hành cùng bạn trên mọi hành trình sân bay với đội xe chất lượng, tài xế chuyên nghiệp và hỗ trợ tận tâm.',contact_social:'Liên hệ & mạng xã hội',airport_transfer_service:'Dịch vụ đưa đón sân bay',support_hours:'Hỗ trợ 24/7',chat_saved:'Hội thoại được lưu tự động',start_admin_chat:'Bắt đầu trò chuyện với admin',select_chat:'Chọn nút Chat tại một đơn để mở hội thoại',chat_persist:'Tin nhắn, ảnh và video sẽ còn nguyên khi bạn mở lại.',direct_chat:'Chat trực tiếp, không chuyển trang',zalo_backup:'Zalo dự phòng',chat_admin:'Chat với admin',messages:'Tin nhắn',chat_placeholder:'Nhập tin nhắn...',hello:'Xin chào',manage_your_trips:'Theo dõi và quản lý các chuyến xe của bạn.',book_new_trip:'Đặt chuyến mới',total_trips:'Tổng chuyến',waiting:'Đang chờ',confirmed:'Đã xác nhận',completed:'Hoàn thành',booking_history:'Lịch sử đặt xe',no_bookings:'Bạn chưa có chuyến xe nào.',book_now:'Đặt xe ngay',booking_code:'Mã đơn',vehicle:'Xe',pickup_date:'Ngày đón',price:'Giá',status:'Trạng thái',status_pending:'Chờ xác nhận',status_confirmed:'Chờ phục vụ',status_completed:'Hoàn thành',status_cancelled:'Đã hủy',status_expired:'Quá hạn',details:'Chi tiết',reviewed:'Đã đánh giá',review_action:'Đánh giá',translate_to:'Dịch sang {lang}',translating:'Đang dịch...',translation:'Bản dịch',translation_failed:'Chưa dịch được tin nhắn.',translated_by:'Dịch tự động bởi {provider}' };
+    const enAdditions = { admin:'Admin',driver_trips:'Driver trips',my_trips:'My trips',footer_description:'Your trusted airport travel partner with quality vehicles, professional drivers and attentive support.',contact_social:'Contact & social media',airport_transfer_service:'Airport transfer service',support_hours:'24/7 Support',chat_saved:'Conversation saved automatically',start_admin_chat:'Start chatting with admin',select_chat:'Select Chat on a booking to open the conversation',chat_persist:'Messages, photos and videos remain when you return.',direct_chat:'Direct chat without leaving this page',zalo_backup:'Backup Zalo',chat_admin:'Chat with admin',messages:'Messages',chat_placeholder:'Type a message...',hello:'Hello',manage_your_trips:'Track and manage your trips.',book_new_trip:'Book a new trip',total_trips:'Total trips',waiting:'Waiting',confirmed:'Confirmed',completed:'Completed',booking_history:'Booking history',no_bookings:'You have no bookings yet.',book_now:'Book now',booking_code:'Booking ID',vehicle:'Vehicle',pickup_date:'Pickup date',price:'Price',status:'Status',status_pending:'Awaiting confirmation',status_confirmed:'Awaiting service',status_completed:'Completed',status_cancelled:'Cancelled',status_expired:'Expired',details:'Details',reviewed:'Reviewed',review_action:'Review',translate_to:'Translate to {lang}',translating:'Translating...',translation:'Translation',translation_failed:'Could not translate this message.',translated_by:'Automatically translated by {provider}' };
+    const zhAdditions = { admin:'管理后台',driver_trips:'司机行程',my_trips:'我的行程',footer_description:'以优质车辆、专业司机和贴心服务陪伴您的每一次机场出行。',contact_social:'联系方式与社交媒体',airport_transfer_service:'机场接送服务',support_hours:'全天候支持',chat_saved:'对话已自动保存',start_admin_chat:'开始与管理员聊天',select_chat:'请在订单中选择聊天以打开对话',chat_persist:'重新打开后，消息、照片和视频仍会保留。',direct_chat:'本页直接聊天，无需跳转',zalo_backup:'备用 Zalo',chat_admin:'联系管理员',messages:'消息',chat_placeholder:'输入消息...',hello:'您好',manage_your_trips:'查看并管理您的车辆行程。',book_new_trip:'预订新行程',total_trips:'全部行程',waiting:'等待中',confirmed:'已确认',completed:'已完成',booking_history:'订车记录',no_bookings:'您还没有任何行程。',book_now:'立即订车',booking_code:'订单编号',vehicle:'车辆',pickup_date:'接车日期',price:'价格',status:'状态',status_pending:'等待确认',status_confirmed:'等待服务',status_completed:'已完成',status_cancelled:'已取消',status_expired:'已过期',details:'详情',reviewed:'已评价',review_action:'评价',translate_to:'翻译成{lang}',translating:'正在翻译...',translation:'译文',translation_failed:'暂时无法翻译此消息。',translated_by:'由 {provider} 自动翻译' };
+    const koAdditions = { admin:'관리자',driver_trips:'기사 운행',my_trips:'내 여행',footer_description:'고품질 차량, 전문 기사, 세심한 지원으로 모든 공항 여행을 함께합니다.',contact_social:'연락처 및 소셜 미디어',airport_transfer_service:'공항 이동 서비스',support_hours:'24시간 지원',chat_saved:'대화가 자동 저장됩니다',start_admin_chat:'관리자와 채팅 시작',select_chat:'예약의 채팅 버튼을 눌러 대화를 여세요',chat_persist:'다시 열어도 메시지, 사진, 동영상이 보존됩니다.',direct_chat:'페이지 이동 없는 실시간 채팅',zalo_backup:'예비 Zalo',chat_admin:'관리자 채팅',messages:'메시지',chat_placeholder:'메시지 입력...',hello:'안녕하세요',manage_your_trips:'여행을 확인하고 관리하세요.',book_new_trip:'새 여행 예약',total_trips:'전체 여행',waiting:'대기 중',confirmed:'확정됨',completed:'완료',booking_history:'예약 내역',no_bookings:'아직 예약한 여행이 없습니다.',book_now:'지금 예약',booking_code:'예약 번호',vehicle:'차량',pickup_date:'픽업 날짜',price:'가격',status:'상태',status_pending:'확정 대기',status_confirmed:'서비스 대기',status_completed:'완료',status_cancelled:'취소됨',status_expired:'만료됨',details:'상세 정보',reviewed:'평가 완료',review_action:'평가',translate_to:'{lang}(으)로 번역',translating:'번역 중...',translation:'번역',translation_failed:'메시지를 번역할 수 없습니다.',translated_by:'{provider} 자동 번역' };
+    Object.assign(viAdditions, { airport_transfer_247:'Đưa đón sân bay 24/7',landing_peacefully:'Hạ cánh an tâm,',car_waiting:'đã có xe chờ.',book_in_minutes:'Đặt trước trong vài phút, biết giá ngay và theo dõi chuyến đi dễ dàng.',many_vehicle_choices:'Nhiều lựa chọn xe',solo_or_group:'Đi một mình hay cả đoàn,',right_vehicle:'luôn có xe phù hợp.',fleet_range:'Từ sedan 4 chỗ đến xe đoàn 45 chỗ, khoang hành lý được hiển thị rõ ràng.',view_fleet:'Xem đội xe',polished_trip:'Chuyến đi chỉn chu',punctual_transparent:'Đúng giờ, minh bạch,',attentive_support:'hỗ trợ tận tâm.',fast_confirm_vietqr:'Xác nhận nhanh, thanh toán VietQR tiện lợi và admin sẵn sàng hỗ trợ qua Zalo.',your_trip:'Chuyến đi của bạn',quick_next_step:'Chọn nhanh, hoàn tất ở bước tiếp theo',trip_type:'Loại chuyến',airport_pickup:'Đón từ sân bay',airport_dropoff:'Tiễn ra sân bay',airport:'Sân bay',select_airport:'Chọn sân bay',pickup_datetime:'Ngày giờ đón',search_vehicle:'Tìm xe',safe_trips:'Chuyến an toàn',satisfied_customers:'Khách hàng hài lòng',reviews_lower:'đánh giá',click_read_reviews:'Nhấn để đọc nhận xét',always_ready:'Luôn sẵn sàng',airports_served:'Sân bay phục vụ',featured_fleet:'ĐỘI XE NỔI BẬT',choose_trip_space:'Chọn không gian vừa vặn cho hành trình',view_book_vehicle:'Xem và đặt xe' });
+    Object.assign(enAdditions, { airport_transfer_247:'Airport transfers 24/7',landing_peacefully:'Land with peace of mind,',car_waiting:'your car is waiting.',book_in_minutes:'Book in minutes, see the price instantly and track your trip easily.',many_vehicle_choices:'Many vehicle choices',solo_or_group:'Travel solo or with a group,',right_vehicle:'there is always a suitable vehicle.',fleet_range:'From 4-seat sedans to 45-seat coaches, with clear luggage capacity.',view_fleet:'View our fleet',polished_trip:'A well-planned journey',punctual_transparent:'Punctual and transparent,',attentive_support:'with attentive support.',fast_confirm_vietqr:'Fast confirmation, convenient VietQR payments and admin support via Zalo.',your_trip:'Your trip',quick_next_step:'Choose quickly and complete the next step',trip_type:'Trip type',airport_pickup:'Pickup from airport',airport_dropoff:'Drop-off at airport',airport:'Airport',select_airport:'Select airport',pickup_datetime:'Pickup date and time',search_vehicle:'Find a car',safe_trips:'Safe trips',satisfied_customers:'Satisfied customers',reviews_lower:'reviews',click_read_reviews:'Click to read reviews',always_ready:'Always available',airports_served:'Airports served',featured_fleet:'FEATURED FLEET',choose_trip_space:'Choose the right space for your journey',view_book_vehicle:'View and book' });
+    Object.assign(zhAdditions, { airport_transfer_247:'全天候机场接送',landing_peacefully:'安心落地，',car_waiting:'车辆已在等候。',book_in_minutes:'几分钟即可预订，立即查看价格并轻松跟踪行程。',many_vehicle_choices:'多种车型选择',solo_or_group:'无论独自出行还是团队出行，',right_vehicle:'总有合适的车辆。',fleet_range:'从四座轿车到四十五座大巴，行李容量清晰显示。',view_fleet:'查看车队',polished_trip:'精心安排的行程',punctual_transparent:'准时、透明，',attentive_support:'贴心服务。',fast_confirm_vietqr:'快速确认、便捷 VietQR 支付，管理员可通过 Zalo 提供支持。',your_trip:'您的行程',quick_next_step:'快速选择并完成下一步',trip_type:'行程类型',airport_pickup:'机场接机',airport_dropoff:'送往机场',airport:'机场',select_airport:'选择机场',pickup_datetime:'接车日期与时间',search_vehicle:'查找车辆',safe_trips:'安全行程',satisfied_customers:'客户满意度',reviews_lower:'条评价',click_read_reviews:'点击查看评价',always_ready:'随时为您服务',airports_served:'服务机场',featured_fleet:'精选车队',choose_trip_space:'为您的行程选择合适空间',view_book_vehicle:'查看并预订' });
+    Object.assign(koAdditions, { airport_transfer_247:'24시간 공항 이동',landing_peacefully:'안심하고 도착하세요,',car_waiting:'차량이 기다리고 있습니다.',book_in_minutes:'몇 분 안에 예약하고 즉시 가격을 확인하며 여행을 쉽게 추적하세요.',many_vehicle_choices:'다양한 차량 선택',solo_or_group:'혼자 또는 단체로 이동해도,',right_vehicle:'항상 알맞은 차량이 있습니다.',fleet_range:'4인승 세단부터 45인승 버스까지 수하물 용량을 명확히 표시합니다.',view_fleet:'차량 보기',polished_trip:'세심하게 준비된 여행',punctual_transparent:'정시 운행과 투명한 가격,',attentive_support:'세심한 지원.',fast_confirm_vietqr:'빠른 확정, 편리한 VietQR 결제, Zalo 관리자 지원.',your_trip:'내 여행',quick_next_step:'빠르게 선택하고 다음 단계에서 완료',trip_type:'여행 유형',airport_pickup:'공항 픽업',airport_dropoff:'공항 샌딩',airport:'공항',select_airport:'공항 선택',pickup_datetime:'픽업 날짜 및 시간',search_vehicle:'차량 찾기',safe_trips:'안전한 여행',satisfied_customers:'고객 만족도',reviews_lower:'개 후기',click_read_reviews:'눌러서 후기 보기',always_ready:'항상 대기',airports_served:'서비스 공항',featured_fleet:'추천 차량',choose_trip_space:'여행에 맞는 공간을 선택하세요',view_book_vehicle:'차량 보기 및 예약' });
+    Object.assign(viAdditions, { online_booking:'ĐẶT XE TRỰC TUYẾN',easy_airport_trip:'Chuyến sân bay nhẹ nhàng bắt đầu từ đây',complete_info:'Hoàn tất thông tin, chọn xe và nhận mã thanh toán trong vài phút.',privacy_info:'Bảo mật thông tin',fast_confirmation:'Xác nhận nhanh',journey:'Hành trình',choose_vehicle:'Chọn xe',confirmation:'Xác nhận',your_journey:'Hành trình của bạn',tell_pickup:'Cho chúng tôi biết nơi và thời gian cần đón',driver_meets:'Tài xế đón khi bạn hạ cánh',door_to_airport:'Đón tận nơi, đến sân bay đúng giờ',after_3_hours:'Sau 3 giờ',tomorrow_morning:'Sáng mai',tomorrow_evening:'Tối mai',pickup_point:'Điểm đón',pickup_address:'Nhập địa chỉ đón',dropoff_point:'Điểm trả',dropoff_address:'Nhập địa chỉ trả',choose_right_vehicle:'Chọn xe phù hợp',busy_hidden:'Hệ thống tự ẩn xe bận theo thời gian bạn chọn',no_active_vehicles:'Hiện chưa có xe hoạt động. Vui lòng chat Zalo với admin để được hỗ trợ.',all:'Tất cả',group_vehicle:'Xe đoàn',no_available_vehicle:'Không còn xe trống trong giờ này',try_other_time:'Hãy thử đổi giờ đón hoặc chat với admin để được hỗ trợ.',passenger_info:'Thông tin hành khách',admin_confirm_info:'Admin sẽ dùng thông tin này để xác nhận chuyến',full_name:'Họ và tên',phone_number:'Số điện thoại',passenger_count:'Số khách',luggage_count:'Số hành lý',flight_number:'Mã chuyến bay',driver_note:'Ghi chú cho tài xế',choose_payment:'Chọn mức thanh toán',scan_vietqr:'Quét VietQR sau khi đơn được tạo',deposit_30:'Đặt cọc 30%',deposit_desc:'Giữ xe trước, thanh toán phần còn lại sau',pay_full:'Thanh toán toàn bộ',pay_full_desc:'Hoàn tất 100% chi phí chuyến ngay',trip_summary:'TÓM TẮT CHUYẾN',your_selection:'Lựa chọn của bạn',selected_vehicle:'Xe đã chọn',selecting_vehicle:'Đang chọn xe...',not_entered:'Chưa nhập',no_time:'Chưa chọn thời gian',no_airport:'Chưa chọn sân bay',estimated_price:'Giá chuyến dự kiến',service_fee_included:'Đã gồm phí dịch vụ',pay_now:'Cần thanh toán lúc này',confirm_booking:'Xác nhận đặt xe',privacy_trip:'Thông tin được bảo mật và chỉ dùng cho chuyến đi.',need_help:'Cần hỗ trợ chọn xe?',admin_zalo:'Admin sẵn sàng tư vấn qua Zalo',chat_now:'Chat ngay',guests_unit:'khách',items_unit:'kiện',per_trip:'/ lượt' });
+    Object.assign(enAdditions, { online_booking:'ONLINE BOOKING',easy_airport_trip:'A smooth airport journey starts here',complete_info:'Complete your details, choose a car and receive a payment code in minutes.',privacy_info:'Data privacy',fast_confirmation:'Fast confirmation',journey:'Journey',choose_vehicle:'Choose a car',confirmation:'Confirmation',your_journey:'Your journey',tell_pickup:'Tell us where and when to pick you up',driver_meets:'Your driver meets you after landing',door_to_airport:'Door-to-door pickup and punctual airport arrival',after_3_hours:'In 3 hours',tomorrow_morning:'Tomorrow morning',tomorrow_evening:'Tomorrow evening',pickup_point:'Pickup point',pickup_address:'Enter pickup address',dropoff_point:'Drop-off point',dropoff_address:'Enter drop-off address',choose_right_vehicle:'Choose a suitable car',busy_hidden:'Busy vehicles are hidden for your selected time',no_active_vehicles:'No vehicles are active. Please contact admin for support.',all:'All',group_vehicle:'Group vehicles',no_available_vehicle:'No vehicles available at this time',try_other_time:'Try another pickup time or chat with admin.',passenger_info:'Passenger information',admin_confirm_info:'Admin will use this information to confirm the trip',full_name:'Full name',phone_number:'Phone number',passenger_count:'Passengers',luggage_count:'Luggage',flight_number:'Flight number',driver_note:'Note for driver',choose_payment:'Choose payment amount',scan_vietqr:'Scan VietQR after your booking is created',deposit_30:'30% deposit',deposit_desc:'Reserve the car and pay the balance later',pay_full:'Pay in full',pay_full_desc:'Pay 100% of the trip now',trip_summary:'TRIP SUMMARY',your_selection:'Your selection',selected_vehicle:'Selected car',selecting_vehicle:'Selecting a car...',not_entered:'Not entered',no_time:'No time selected',no_airport:'No airport selected',estimated_price:'Estimated trip price',service_fee_included:'Service fee included',pay_now:'Amount due now',confirm_booking:'Confirm booking',privacy_trip:'Your information is protected and used only for this trip.',need_help:'Need help choosing a car?',admin_zalo:'Admin is ready to advise via Zalo',chat_now:'Chat now',guests_unit:'guests',items_unit:'items',per_trip:'/ trip' });
+    Object.assign(zhAdditions, { online_booking:'在线订车',easy_airport_trip:'轻松的机场行程从这里开始',complete_info:'填写信息、选择车辆，几分钟内即可获得付款码。',privacy_info:'信息安全',fast_confirmation:'快速确认',journey:'行程',choose_vehicle:'选择车辆',confirmation:'确认',your_journey:'您的行程',tell_pickup:'请告诉我们接车地点和时间',driver_meets:'航班落地后司机接您',door_to_airport:'上门接送，准时抵达机场',after_3_hours:'三小时后',tomorrow_morning:'明天早上',tomorrow_evening:'明天晚上',pickup_point:'接车地点',pickup_address:'输入接车地址',dropoff_point:'送达地点',dropoff_address:'输入送达地址',choose_right_vehicle:'选择合适车辆',busy_hidden:'系统会按您选择的时间自动隐藏忙碌车辆',no_active_vehicles:'目前没有可用车辆，请联系管理员获取支持。',all:'全部',group_vehicle:'团体车辆',no_available_vehicle:'此时间段没有空闲车辆',try_other_time:'请更换接车时间或联系管理员。',passenger_info:'乘客信息',admin_confirm_info:'管理员将使用这些信息确认行程',full_name:'姓名',phone_number:'电话号码',passenger_count:'乘客人数',luggage_count:'行李数量',flight_number:'航班号',driver_note:'给司机的备注',choose_payment:'选择付款金额',scan_vietqr:'订单创建后扫描 VietQR',deposit_30:'支付 30% 定金',deposit_desc:'先保留车辆，稍后支付余款',pay_full:'全额付款',pay_full_desc:'立即支付全部行程费用',trip_summary:'行程摘要',your_selection:'您的选择',selected_vehicle:'已选车辆',selecting_vehicle:'正在选择车辆...',not_entered:'尚未填写',no_time:'尚未选择时间',no_airport:'尚未选择机场',estimated_price:'预计行程价格',service_fee_included:'已含服务费',pay_now:'当前应付金额',confirm_booking:'确认订车',privacy_trip:'您的信息受保护，仅用于本次行程。',need_help:'需要协助选择车辆？',admin_zalo:'管理员可通过 Zalo 为您提供建议',chat_now:'立即聊天',guests_unit:'位乘客',items_unit:'件行李',per_trip:'/ 次' });
+    Object.assign(koAdditions, { online_booking:'온라인 차량 예약',easy_airport_trip:'편안한 공항 여행이 여기서 시작됩니다',complete_info:'정보를 입력하고 차량을 선택하면 몇 분 안에 결제 코드를 받을 수 있습니다.',privacy_info:'정보 보호',fast_confirmation:'빠른 확정',journey:'여행',choose_vehicle:'차량 선택',confirmation:'확인',your_journey:'내 여행',tell_pickup:'픽업 장소와 시간을 알려주세요',driver_meets:'착륙 후 기사가 픽업합니다',door_to_airport:'문 앞 픽업으로 공항에 정시 도착',after_3_hours:'3시간 후',tomorrow_morning:'내일 아침',tomorrow_evening:'내일 저녁',pickup_point:'픽업 장소',pickup_address:'픽업 주소 입력',dropoff_point:'도착 장소',dropoff_address:'도착 주소 입력',choose_right_vehicle:'알맞은 차량 선택',busy_hidden:'선택한 시간에 운행 중인 차량은 자동으로 숨겨집니다',no_active_vehicles:'현재 운행 차량이 없습니다. 관리자에게 문의하세요.',all:'전체',group_vehicle:'단체 차량',no_available_vehicle:'이 시간에는 빈 차량이 없습니다',try_other_time:'픽업 시간을 변경하거나 관리자에게 문의하세요.',passenger_info:'승객 정보',admin_confirm_info:'관리자가 이 정보로 여행을 확정합니다',full_name:'성명',phone_number:'전화번호',passenger_count:'승객 수',luggage_count:'수하물 수',flight_number:'항공편 번호',driver_note:'기사에게 남길 메모',choose_payment:'결제 금액 선택',scan_vietqr:'예약 생성 후 VietQR 스캔',deposit_30:'30% 보증금',deposit_desc:'차량을 먼저 확보하고 잔액은 나중에 결제',pay_full:'전액 결제',pay_full_desc:'여행 비용 100% 즉시 결제',trip_summary:'여행 요약',your_selection:'선택 내용',selected_vehicle:'선택 차량',selecting_vehicle:'차량 선택 중...',not_entered:'미입력',no_time:'시간 미선택',no_airport:'공항 미선택',estimated_price:'예상 여행 요금',service_fee_included:'서비스 요금 포함',pay_now:'현재 결제 금액',confirm_booking:'예약 확인',privacy_trip:'정보는 보호되며 이 여행에만 사용됩니다.',need_help:'차량 선택 도움이 필요하세요?',admin_zalo:'관리자가 Zalo로 상담해 드립니다',chat_now:'지금 채팅',guests_unit:'명',items_unit:'개',per_trip:'/ 회' });
+    Object.assign(viAdditions, { luggage_unit:'hành lý',no_suitable_vehicle:'Chưa có xe phù hợp',checking_available:'Đang kiểm tra xe trống...',available_count:'{count} xe đang trống trong khung giờ này.',availability_failed:'Chưa kiểm tra được xe trống; hệ thống sẽ kiểm tra lại khi gửi đơn.',capacity_error:'Xe {vehicle} chỉ nhận tối đa {count} khách.',creating_booking:'Đang tạo đơn...',note_placeholder:'Ghế trẻ em, bảng tên đón khách, hành lý đặc biệt...' });
+    Object.assign(enAdditions, { luggage_unit:'luggage items',no_suitable_vehicle:'No suitable car selected',checking_available:'Checking available cars...',available_count:'{count} cars are available at this time.',availability_failed:'Availability could not be checked; it will be checked again when submitting.',capacity_error:'{vehicle} accepts up to {count} passengers.',creating_booking:'Creating booking...',note_placeholder:'Child seat, pickup sign, special luggage...' });
+    Object.assign(zhAdditions, { luggage_unit:'件行李',no_suitable_vehicle:'尚未选择合适车辆',checking_available:'正在检查空闲车辆...',available_count:'此时间段有 {count} 辆空闲车辆。',availability_failed:'暂时无法检查车辆，提交订单时将再次检查。',capacity_error:'{vehicle} 最多可乘坐 {count} 位乘客。',creating_booking:'正在创建订单...',note_placeholder:'儿童座椅、接机牌、特殊行李...' });
+    Object.assign(koAdditions, { luggage_unit:'개 수하물',no_suitable_vehicle:'알맞은 차량이 선택되지 않았습니다',checking_available:'빈 차량 확인 중...',available_count:'이 시간에 {count}대의 차량이 비어 있습니다.',availability_failed:'차량을 확인할 수 없습니다. 예약 제출 시 다시 확인합니다.',capacity_error:'{vehicle}의 최대 탑승 인원은 {count}명입니다.',creating_booking:'예약 생성 중...',note_placeholder:'유아용 좌석, 픽업 표지판, 특수 수하물...' });
+    Object.assign(viAdditions, { seats_unit:'chỗ' }); Object.assign(enAdditions, { seats_unit:'seats' }); Object.assign(zhAdditions, { seats_unit:'座' }); Object.assign(koAdditions, { seats_unit:'인승' });
+    Object.assign(viAdditions, { booking_title:'Đặt xe sân bay',all_vehicles:'Tất cả xe',fleet_updating:'Đội xe đang được cập nhật. Vui lòng liên hệ admin.',from_price:'Từ',distinct_experience:'TRẢI NGHIỆM KHÁC BIỆT',gentle_details:'Mọi chi tiết đều hướng đến một chuyến đi nhẹ nhàng',experience_desc:'Không còn phải gọi nhiều nơi để hỏi giá. Bạn chủ động chọn xe, thời gian, mức thanh toán và nhận xác nhận ngay trên một giao diện.',learn_about:'Tìm hiểu về chúng tôi',punctual:'Đúng giờ',proactive_flight:'Chủ động theo lịch bay',safety:'An toàn',vehicles_checked:'Xe và tài xế được kiểm tra',clear_cost:'Rõ chi phí',know_price:'Biết giá trước khi đặt',quick_support:'Hỗ trợ nhanh',direct_zalo:'Chat trực tiếp qua Zalo',customer:'Khách hàng',booking_time:'Thời gian đặt',route:'Hành trình',passengers_luggage:'Khách / hành lý',flight:'Chuyến bay',note:'Ghi chú',none:'Không có',bank_transfer:'Thanh toán chuyển khoản',received:'Đã nhận',amount_due:'Cần chuyển lúc này',bank:'Ngân hàng',account_number:'Số tài khoản',account_holder:'Chủ tài khoản',required_content:'Nội dung bắt buộc',paid_transfer:'Tôi đã chuyển khoản',scan_bank_app:'Quét bằng ứng dụng ngân hàng',qr_prefilled:'QR đã điền sẵn số tiền và nội dung chuyển khoản.',open_large_qr:'Mở mã QR kích thước lớn',paid_full_status:'Đã thanh toán đủ',cancel_booking:'Hủy đơn',awaiting_payment:'Chờ thanh toán',pending_admin_check:'Chờ admin kiểm tra',deposit_paid:'Đã đặt cọc' });
+    Object.assign(enAdditions, { booking_title:'Airport car booking',all_vehicles:'All vehicles',fleet_updating:'Our fleet is being updated. Please contact admin.',from_price:'From',distinct_experience:'A DIFFERENT EXPERIENCE',gentle_details:'Every detail makes your journey easier',experience_desc:'No need to call multiple providers for prices. Choose your car, time and payment amount in one interface.',learn_about:'Learn about us',punctual:'Punctual',proactive_flight:'Aligned with flight schedules',safety:'Safe',vehicles_checked:'Vehicles and drivers are checked',clear_cost:'Clear costs',know_price:'Know the price before booking',quick_support:'Fast support',direct_zalo:'Direct chat via Zalo',customer:'Customer',booking_time:'Booking time',route:'Route',passengers_luggage:'Passengers / luggage',flight:'Flight',note:'Note',none:'None',bank_transfer:'Bank transfer payment',received:'Received',amount_due:'Amount due now',bank:'Bank',account_number:'Account number',account_holder:'Account holder',required_content:'Required transfer note',paid_transfer:'I have transferred',scan_bank_app:'Scan with your banking app',qr_prefilled:'The amount and transfer note are prefilled.',open_large_qr:'Open large QR code',paid_full_status:'Paid in full',cancel_booking:'Cancel booking',awaiting_payment:'Awaiting payment',pending_admin_check:'Awaiting admin review',deposit_paid:'Deposit paid' });
+    Object.assign(zhAdditions, { booking_title:'机场车辆预订',all_vehicles:'全部车辆',fleet_updating:'车队正在更新，请联系管理员。',from_price:'起价',distinct_experience:'与众不同的体验',gentle_details:'每个细节都让行程更加轻松',experience_desc:'无需致电多处询价，您可以在一个界面中选择车辆、时间和付款金额。',learn_about:'了解我们',punctual:'准时',proactive_flight:'配合航班时间',safety:'安全',vehicles_checked:'车辆和司机均经过检查',clear_cost:'费用透明',know_price:'预订前即可了解价格',quick_support:'快速支持',direct_zalo:'通过 Zalo 直接聊天',customer:'客户',booking_time:'预订时间',route:'行程',passengers_luggage:'乘客 / 行李',flight:'航班',note:'备注',none:'无',bank_transfer:'银行转账付款',received:'已收款',amount_due:'当前应转金额',bank:'银行',account_number:'账号',account_holder:'账户名称',required_content:'必填转账备注',paid_transfer:'我已完成转账',scan_bank_app:'使用银行应用扫码',qr_prefilled:'二维码已预填金额和转账备注。',open_large_qr:'打开大尺寸二维码',paid_full_status:'已全额付款',cancel_booking:'取消订单',awaiting_payment:'等待付款',pending_admin_check:'等待管理员审核',deposit_paid:'已支付定金' });
+    Object.assign(koAdditions, { booking_title:'공항 차량 예약',all_vehicles:'전체 차량',fleet_updating:'차량 목록을 업데이트 중입니다. 관리자에게 문의하세요.',from_price:'시작가',distinct_experience:'차별화된 경험',gentle_details:'모든 세부 사항이 여행을 편안하게 합니다',experience_desc:'여러 곳에 전화할 필요 없이 한 화면에서 차량, 시간, 결제 금액을 선택하세요.',learn_about:'회사 소개',punctual:'정시 운행',proactive_flight:'항공편 일정에 맞춘 운행',safety:'안전',vehicles_checked:'차량과 기사 점검',clear_cost:'투명한 비용',know_price:'예약 전 가격 확인',quick_support:'빠른 지원',direct_zalo:'Zalo 실시간 채팅',customer:'고객',booking_time:'예약 시간',route:'경로',passengers_luggage:'승객 / 수하물',flight:'항공편',note:'메모',none:'없음',bank_transfer:'계좌이체 결제',received:'수령 금액',amount_due:'현재 이체 금액',bank:'은행',account_number:'계좌번호',account_holder:'예금주',required_content:'필수 이체 메모',paid_transfer:'이체 완료',scan_bank_app:'은행 앱으로 스캔',qr_prefilled:'금액과 이체 메모가 입력되어 있습니다.',open_large_qr:'큰 QR 코드 열기',paid_full_status:'전액 결제 완료',cancel_booking:'예약 취소',awaiting_payment:'결제 대기',pending_admin_check:'관리자 확인 대기',deposit_paid:'보증금 결제됨' });
+    Object.assign(viAdditions, { you:'Bạn',auto_reply:'Trả lời tự động',language_label:'Ngôn ngữ',choose_language:'Chọn ngôn ngữ',theme_label:'Giao diện',choose_theme:'Chọn giao diện',my_bookings_title:'Đơn xe của tôi',booking_number:'Đơn',created_at:'Tạo lúc',open_menu:'Mở menu' });
+    Object.assign(enAdditions, { you:'You',auto_reply:'Automatic reply',language_label:'Language',choose_language:'Choose language',theme_label:'Appearance',choose_theme:'Choose appearance',my_bookings_title:'My bookings',booking_number:'Booking',created_at:'Created at',open_menu:'Open menu' });
+    Object.assign(zhAdditions, { you:'您',auto_reply:'自动回复',language_label:'语言',choose_language:'选择语言',theme_label:'外观',choose_theme:'选择外观',my_bookings_title:'我的车辆订单',booking_number:'订单',created_at:'创建于',open_menu:'打开菜单' });
+    Object.assign(koAdditions, { you:'나',auto_reply:'자동 답변',language_label:'언어',choose_language:'언어 선택',theme_label:'화면 모드',choose_theme:'화면 모드 선택',my_bookings_title:'내 차량 예약',booking_number:'예약',created_at:'생성 시간',open_menu:'메뉴 열기' });
+    Object.assign(en, enAdditions);
+    Object.assign(dictionaries['zh-CN'], zhAdditions);
+    Object.assign(dictionaries.ko, koAdditions);
+
+    const languageNames = { vi:'Tiếng Việt',en:'English','zh-CN':'中文',ko:'한국어',ja:'日本語',th:'ไทย',fr:'Français',de:'Deutsch',es:'Español',pt:'Português',ru:'Русский',it:'Italiano',nl:'Nederlands',ar:'العربية',hi:'हिन्दी',id:'Bahasa Indonesia',ms:'Bahasa Melayu',tl:'Filipino',km:'ខ្មែរ',lo:'ລາວ' };
+    const originalLooseText = new WeakMap();
+    const machineTranslations = new Map();
+    const vietnameseText = /[ăâđêôơưĂÂĐÊÔƠƯ]|[àáạảãèéẹẻẽìíịỉĩòóọỏõùúụủũỳýỵỷỹ]/iu;
+    const translatableTags = new Set(['H1','H2','H3','H4','H5','H6','LABEL','BUTTON','A','TH','DT','OPTION','P','SMALL','SPAN','OUTPUT','LEGEND']);
+    let languageGeneration = 0;
+    let machineTimer = null;
+
+    function translateLooseTextNodes(language, selected) {
+        const reverseVietnamese = new Map(Object.entries(viAdditions).map(([key, value]) => [value, key]));
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        const nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(node => {
+            const parent = node.parentElement;
+            if (!parent || parent.closest('script,style,[data-i18n],.chat-bubble,.review-comment,.notranslate')) return;
+            if (!originalLooseText.has(node)) originalLooseText.set(node, node.data);
+            const original = originalLooseText.get(node);
+            const trimmed = original.trim();
+            let translated = trimmed;
+            const key = reverseVietnamese.get(trimmed);
+            if (language !== 'vi' && key) translated = selected?.[key] || trimmed;
+            else if (language !== 'vi') {
+                const passengerMatch = trimmed.match(/^(\d+)\s+khách$/);
+                const luggageMatch = trimmed.match(/^(\d+)\s+kiện$/);
+                const seatsMatch = trimmed.match(/^(\d+)\s+ch(?:ỗ|o)$/i);
+                if (passengerMatch) translated = `${passengerMatch[1]} ${selected?.guests_unit || en.guests_unit || 'guests'}`;
+                if (luggageMatch) translated = `${luggageMatch[1]} ${selected?.items_unit || en.items_unit || 'items'}`;
+                if (seatsMatch) translated = `${seatsMatch[1]} ${selected?.seats_unit || en.seats_unit || 'seats'}`;
+                if (trimmed === '/ lượt') translated = selected?.per_trip || en.per_trip || '/ trip';
+            }
+            node.data = original.replace(trimmed, translated);
+        });
+        document.querySelectorAll('[placeholder]:not([data-i18n-placeholder])').forEach(element => {
+            if (!element.dataset.loosePlaceholderVi) element.dataset.loosePlaceholderVi = element.placeholder;
+            const original = element.dataset.loosePlaceholderVi;
+            const key = reverseVietnamese.get(original);
+            element.placeholder = language !== 'vi' && key ? (selected?.[key] || original) : original;
+        });
+    }
+
+    function requestMissingTranslations(language, generation) {
+        if (language === 'vi' || generation !== languageGeneration) return;
+        const explicit = dictionaries[language] || {};
+        const requests = new Map();
+        let sequence = 0;
+        const add = (text, sourceLanguage, apply) => {
+            const clean = String(text || '').trim();
+            if (!clean) return;
+            const cacheKey = `${sourceLanguage}|${language}|${clean}`;
+            if (machineTranslations.has(cacheKey)) { apply(machineTranslations.get(cacheKey)); return; }
+            if (!requests.has(cacheKey)) requests.set(cacheKey, { id: `ui-${sequence++}`, text: clean, sourceLanguage, apply: [] });
+            requests.get(cacheKey).apply.push(apply);
+        };
+        const collectAttribute = (selector, keyDataset, originalDataset, property, attributeName) => {
+            document.querySelectorAll(selector).forEach(element => {
+                const key = element.dataset[keyDataset];
+                if (!key || explicit[key]) return;
+                const original = element.dataset[originalDataset] || '';
+                const source = en[key] || viAdditions[key] || original;
+                const sourceLanguage = en[key] ? 'en' : 'vi';
+                add(source, sourceLanguage, translated => {
+                    if (generation !== languageGeneration || document.documentElement.lang !== language) return;
+                    explicit[key] = translated;
+                    if (property) element[property] = translated;
+                    else element.setAttribute(attributeName, translated);
+                });
+            });
+        };
+        collectAttribute('[data-i18n]', 'i18n', 'i18nVi', 'textContent');
+        collectAttribute('[data-i18n-placeholder]', 'i18nPlaceholder', 'i18nPlaceholderVi', 'placeholder');
+        collectAttribute('[data-i18n-title]', 'i18nTitle', 'i18nTitleVi', 'title');
+        collectAttribute('[data-i18n-aria-label]', 'i18nAriaLabel', 'i18nAriaVi', null, 'aria-label');
+
+        const reverseVietnamese = new Map(Object.entries(viAdditions).map(([key, value]) => [value, key]));
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            const parent = node.parentElement;
+            if (!parent || parent.closest('script,style,[data-i18n],.chat-bubble,.review-comment,.notranslate,[data-no-translate]')) continue;
+            if (!originalLooseText.has(node)) originalLooseText.set(node, node.data);
+            const original = originalLooseText.get(node);
+            const trimmed = original.trim();
+            const key = reverseVietnamese.get(trimmed);
+            if (key && explicit[key]) continue;
+            if (!key && (!translatableTags.has(parent.tagName) || !vietnameseText.test(trimmed) || parent.closest('.admin-review-card,.assigned-driver-card'))) continue;
+            const source = key ? (en[key] || trimmed) : trimmed;
+            add(source, key && en[key] ? 'en' : 'vi', translated => {
+                if (generation === languageGeneration && document.documentElement.lang === language) {
+                    if (key) explicit[key] = translated;
+                    node.data = original.replace(trimmed, translated);
+                }
+            });
+        }
+        document.querySelectorAll('[placeholder]:not([data-i18n-placeholder])').forEach(element => {
+            const original = element.dataset.loosePlaceholderVi || element.placeholder;
+            if (!vietnameseText.test(original)) return;
+            add(original, 'vi', translated => { if (generation === languageGeneration) element.placeholder = translated; });
+        });
+        [['[title]:not([data-i18n-title])','title'], ['[aria-label]:not([data-i18n-aria-label])','aria-label']].forEach(([selector, attribute]) => {
+            document.querySelectorAll(selector).forEach(element => {
+                if (element.closest('.review-comment,.chat-bubble')) return;
+                const original = element.getAttribute(attribute) || '';
+                if (!vietnameseText.test(original)) return;
+                add(original, 'vi', translated => { if (generation === languageGeneration) element.setAttribute(attribute, translated); });
+            });
+        });
+
+        const queue = Array.from(requests.values());
+        const send = async batch => {
+            try {
+                const response = await fetch('/api/localization/translate', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetLanguage: language, items: batch.map(({ id, text, sourceLanguage }) => ({ id, text, sourceLanguage })) })
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                let changed = false;
+                (data.translations || []).forEach(result => {
+                    if (!result.text || result.error) return;
+                    const request = batch.find(item => item.id === result.id);
+                    if (!request) return;
+                    machineTranslations.set(`${request.sourceLanguage}|${language}|${request.text}`, result.text);
+                    request.apply.forEach(apply => apply(result.text));
+                    changed = true;
+                });
+                if (changed && generation === languageGeneration) window.dispatchEvent(new CustomEvent('sgp:translationsready', { detail: { language } }));
+            } catch (error) { /* Keep the original text if the optional translation service is temporarily unavailable. */ }
+        };
+        (async () => {
+            for (let index = 0; index < queue.length; index += 30) {
+                if (generation !== languageGeneration) return;
+                await send(queue.slice(index, index + 30));
+            }
+            const titleKey = location.pathname === '/dashboard' ? 'my_bookings_title' : location.pathname === '/booking' ? 'booking_title' : null;
+            if (titleKey && explicit[titleKey] && generation === languageGeneration) document.title = `${explicit[titleKey]} | SaiGonPhoenix`;
+        })();
+    }
+
+    function scheduleMissingTranslations(language, generation) {
+        clearTimeout(machineTimer);
+        machineTimer = window.setTimeout(() => requestMissingTranslations(language, generation), 60);
+    }
+
+    const themeLabels = {
+        vi: ['Tự động', 'Sáng', 'Tối'], en: ['Auto', 'Light', 'Dark'], 'zh-CN': ['自动', '浅色', '深色'], ko: ['자동', '라이트', '다크'], ja: ['自動', 'ライト', 'ダーク'], th: ['อัตโนมัติ', 'สว่าง', 'มืด'], fr: ['Auto', 'Clair', 'Sombre'], de: ['Auto', 'Hell', 'Dunkel'], es: ['Auto', 'Claro', 'Oscuro'], pt: ['Auto', 'Claro', 'Escuro'], ru: ['Авто', 'Светлая', 'Тёмная'], it: ['Auto', 'Chiaro', 'Scuro'], nl: ['Auto', 'Licht', 'Donker'], ar: ['تلقائي', 'فاتح', 'داكن'], hi: ['स्वतः', 'हल्का', 'गहरा'], id: ['Otomatis', 'Terang', 'Gelap'], ms: ['Auto', 'Cerah', 'Gelap'], tl: ['Auto', 'Maliwanag', 'Madilim'], km: ['ស្វ័យប្រវត្តិ', 'ភ្លឺ', 'ងងឹត'], lo: ['ອັດຕະໂນມັດ', 'ແຈ້ງ', 'ມືດ']
+    };
+
+    function applyLanguage(language) {
+        if (!languageNames[language]) language = 'vi';
+        const generation = ++languageGeneration;
+        const selected = language === 'vi' ? null : (dictionaries[language] || {});
+        document.documentElement.lang = language;
+        document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            if (!element.dataset.i18nVi) element.dataset.i18nVi = element.textContent.trim();
+            element.textContent = selected?.[element.dataset.i18n] || element.dataset.i18nVi;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            if (!element.dataset.i18nPlaceholderVi) element.dataset.i18nPlaceholderVi = element.placeholder;
+            element.placeholder = selected?.[element.dataset.i18nPlaceholder] || element.dataset.i18nPlaceholderVi;
+        });
+        document.querySelectorAll('[data-i18n-title]').forEach(element => {
+            if (!element.dataset.i18nTitleVi) element.dataset.i18nTitleVi = element.title;
+            element.title = selected?.[element.dataset.i18nTitle] || element.dataset.i18nTitleVi;
+        });
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+            if (!element.dataset.i18nAriaVi) element.dataset.i18nAriaVi = element.getAttribute('aria-label') || '';
+            element.setAttribute('aria-label', selected?.[element.dataset.i18nAriaLabel] || element.dataset.i18nAriaVi);
+        });
+        translateLooseTextNodes(language, selected);
+        const titleKey = location.pathname === '/dashboard' ? 'my_bookings_title' : location.pathname === '/booking' ? 'booking_title' : null;
+        document.title = titleKey && selected?.[titleKey] ? `${selected[titleKey]} | SaiGonPhoenix` : originalDocumentTitle;
+        const labels = themeLabels[language] || themeLabels.en;
+        const themeSelect = document.querySelector('[data-theme-select]');
+        if (themeSelect) Array.from(themeSelect.options).forEach((option, index) => { option.textContent = labels[index]; });
+        document.querySelectorAll('[data-language-select]').forEach(select => { select.value = language; });
+        try { localStorage.setItem('sgp-language', language); } catch (error) {}
+        document.querySelectorAll('input[name="language"], input[name="uiLanguage"]').forEach(input => { input.value = language; });
+        window.dispatchEvent(new CustomEvent('sgp:languagechange', { detail: { language } }));
+        scheduleMissingTranslations(language, generation);
+    }
+
+    window.SGP_LOCALIZATION = {
+        getLanguage: () => document.documentElement.lang || 'vi',
+        getLanguageName: language => languageNames[language] || language,
+        text: (key, replacements = {}) => {
+            const language = document.documentElement.lang || 'vi';
+        const source = language === 'vi' ? viAdditions : ({ ...en, ...(dictionaries[language] || {}) });
+            return String(source[key] || viAdditions[key] || key).replace(/\{(\w+)\}/g, (_, name) => replacements[name] ?? `{${name}}`);
+        }
+    };
+
+    function resolveTheme(preference) {
+        return preference === 'auto' ? (new Date().getHours() >= 6 && new Date().getHours() < 18 ? 'light' : 'dark') : preference;
+    }
+    function applyTheme(preference) {
+        const safePreference = ['auto', 'light', 'dark'].includes(preference) ? preference : 'auto';
+        document.documentElement.dataset.themePreference = safePreference;
+        document.documentElement.dataset.theme = resolveTheme(safePreference);
+        document.querySelectorAll('[data-theme-select]').forEach(select => { select.value = safePreference; });
+        const themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeMeta) themeMeta.content = document.documentElement.dataset.theme === 'dark' ? '#0c1222' : '#121b35';
+        try { localStorage.setItem('sgp-theme', safePreference); } catch (error) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        let language = 'vi'; let theme = 'auto';
+        try { language = localStorage.getItem('sgp-language') || 'vi'; theme = localStorage.getItem('sgp-theme') || 'auto'; } catch (error) {}
+        if (!document.querySelector(`[data-language-select] option[value="${CSS.escape(language)}"]`)) language = 'vi';
+        applyLanguage(language); applyTheme(theme);
+        document.querySelectorAll('[data-language-select]').forEach(select => select.addEventListener('change', () => applyLanguage(select.value)));
+        document.querySelectorAll('[data-theme-select]').forEach(select => select.addEventListener('change', () => applyTheme(select.value)));
+        const observer = new MutationObserver(() => scheduleMissingTranslations(document.documentElement.lang || 'vi', languageGeneration));
+        observer.observe(document.body, { childList: true, subtree: true });
+        setInterval(() => { if (document.documentElement.dataset.themePreference === 'auto') applyTheme('auto'); }, 60000);
+
+        document.querySelectorAll('.star-rating').forEach(group => group.addEventListener('change', event => {
+            const output = group.parentElement.querySelector('[data-rating-output]');
+            if (output) output.textContent = `${event.target.value}/5 sao`;
+        }));
+        const reviewText = document.querySelector('textarea[name="comment"]');
+        const reviewCount = document.querySelector('[data-review-count]');
+        const refreshCount = () => { if (reviewText && reviewCount) reviewCount.textContent = reviewText.value.length; };
+        reviewText?.addEventListener('input', refreshCount); refreshCount();
+        document.querySelector('[data-review-images]')?.addEventListener('change', event => {
+            const preview = document.querySelector('[data-review-preview]');
+            preview.innerHTML = '';
+            Array.from(event.target.files).slice(0, 4).forEach(file => {
+                const image = document.createElement('img'); image.alt = file.name; image.src = URL.createObjectURL(file); preview.appendChild(image);
+            });
+        });
+    });
+})();

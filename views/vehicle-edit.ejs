@@ -1,16 +1,17 @@
 <% layout('layout') -%>
-<div class="form-card"><div class="card-header"><h4><i class="fas fa-pen-to-square"></i> Chỉnh sửa xe</h4><p>Cập nhật thông tin của <%= vehicle.name %></p></div><div class="card-body">
+<div class="form-card"><div class="card-header"><h4><i class="fas fa-pen-to-square"></i> Chỉnh sửa xe</h4><p>Cập nhật thông tin và tài xế của <%= vehicle.name %></p></div><div class="card-body">
 <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
 <form method="post" action="/admin/vehicles/<%= vehicle._id %>/edit" class="row g-3">
 <div class="col-md-6"><label class="form-label">Tên xe *</label><input class="form-control" name="name" value="<%= vehicle.name %>" required></div>
-<div class="col-md-3"><label class="form-label">Loại xe *</label><select class="form-select" name="type" required><% ['4 cho','7 cho','9 cho','9 cho vip','16 cho','29 cho','45 cho'].forEach(type => { %><option value="<%= type %>" <%= vehicle.type === type ? 'selected' : '' %>><%= type %></option><% }) %></select></div>
+<div class="col-md-3"><label class="form-label">Loại xe *</label><select class="form-select" name="type" required><% vehicleTypes.forEach(type => { %><option value="<%= type %>" <%= vehicle.type === type ? 'selected' : '' %>><%= type %></option><% }) %></select></div>
 <div class="col-md-3"><label class="form-label">Giá mỗi lượt *</label><input class="form-control" type="number" min="0" step="1000" name="price" value="<%= vehicle.price %>" required></div>
-<div class="col-md-4"><label class="form-label">Số khách tối đa *</label><input class="form-control" type="number" min="1" name="capacity" value="<%= vehicle.capacity %>" required></div>
-<div class="col-md-4"><label class="form-label">Số hành lý</label><input class="form-control" type="number" min="0" name="luggageCapacity" value="<%= vehicle.luggageCapacity %>"></div>
-<div class="col-md-4"><label class="form-label">Trạng thái</label><select class="form-select" name="isAvailable"><option value="true" <%= vehicle.isAvailable ? 'selected' : '' %>>Đang hoạt động</option><option value="false" <%= !vehicle.isAvailable ? 'selected' : '' %>>Đã ẩn</option></select></div>
+<div class="col-md-3"><label class="form-label">Số khách tối đa *</label><input class="form-control" type="number" min="1" name="capacity" value="<%= vehicle.capacity %>" required></div>
+<div class="col-md-3"><label class="form-label">Số hành lý</label><input class="form-control" type="number" min="0" name="luggageCapacity" value="<%= vehicle.luggageCapacity %>"></div>
+<div class="col-md-3"><label class="form-label">Trạng thái</label><select class="form-select" name="isAvailable"><option value="true" <%= vehicle.isAvailable ? 'selected' : '' %>>Đang hoạt động</option><option value="false" <%= !vehicle.isAvailable ? 'selected' : '' %>>Đã ẩn</option></select></div>
+<div class="col-md-3"><label class="form-label">Tài xế phụ trách</label><select class="form-select" name="driverId"><option value="">-- Chưa gán --</option><% drivers.forEach(driver => { %><option value="<%= driver._id %>" <%= String(vehicle.driver || '') === String(driver._id) ? 'selected' : '' %>><%= driver.username %> · <%= driver.driverProfile?.licensePlate || 'chưa biển số' %></option><% }) %></select></div>
 <div class="col-12"><label class="form-label">Mô tả</label><textarea class="form-control" rows="3" name="description"><%= vehicle.description %></textarea></div>
-<div class="col-md-6"><label class="form-label">Đổi sang ảnh trong thư viện</label><select class="form-select" name="imageAssetId" id="vehicleImageAsset"><option value="">-- Giữ ảnh hiện tại --</option><% imageAssets.forEach(image => { %><option value="<%= image._id %>" data-image-url="<%= image.url %>"><%= image.originalName %></option><% }) %></select></div>
-<div class="col-md-6"><label class="form-label">Hoặc nhập URL ảnh mới</label><input class="form-control" type="url" name="image" placeholder="Để trống để giữ ảnh hiện tại"></div>
-<div class="col-12"><p class="small text-muted mb-2">Ảnh hiện tại / ảnh mới được chọn:</p><img id="vehicleImagePreview" class="admin-image-preview" src="<%= vehicle.images[0] || '/images/default-car.jpg' %>" alt="Ảnh xe"></div>
-<div class="col-12 d-flex gap-2"><button class="btn btn-danger px-4" type="submit"><i class="fas fa-floppy-disk"></i> Lưu thay đổi</button><a class="btn btn-outline-dark" href="/admin#vehicles">Hủy</a></div>
+<div class="col-md-6"><label class="form-label">Ảnh trong thư viện</label><select class="form-select" name="imageAssetId" id="vehicleImageAsset"><option value="">-- Giữ ảnh hiện tại --</option><% imageAssets.forEach(image => { %><option value="<%= image._id %>" data-image-url="<%= image.url %>"><%= image.originalName %></option><% }) %></select></div>
+<div class="col-md-6"><label class="form-label">Hoặc URL ảnh mới</label><input class="form-control" type="url" name="image" placeholder="Để trống để giữ ảnh"></div>
+<div class="col-12"><img id="vehicleImagePreview" class="admin-image-preview" src="<%= vehicle.images[0] || '/images/default-car.jpg' %>" alt="Ảnh xe"></div>
+<div class="col-12 d-flex gap-2"><button class="btn btn-danger px-4"><i class="fas fa-floppy-disk"></i> Lưu thay đổi</button><a class="btn btn-outline-dark" href="/admin#vehicles">Hủy</a></div>
 </form></div></div>

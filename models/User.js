@@ -24,13 +24,22 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
+        enum: ['user', 'admin', 'driver'],
         default: 'user'
+    },
+    driverProfile: {
+        licensePlate: { type: String, trim: true, default: '' },
+        yearsExperience: { type: Number, min: 0, default: 0 },
+        zalo: { type: String, trim: true, default: '' },
+        photo: { type: String, trim: true, default: '' },
+        note: { type: String, trim: true, maxlength: 500, default: '' }
     },
     isActive: {
         type: Boolean,
         default: true
-    }
+    },
+    resetPasswordToken: { type: String, select: false },
+    resetPasswordExpires: { type: Date, select: false }
 }, {
     timestamps: true
 });
