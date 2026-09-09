@@ -45,6 +45,7 @@ exports.createBooking = async (req, res, next) => {
         const requiredAmount = paymentOption === 'full' ? vehicle.price : Math.round(vehicle.price * 0.3);
         const booking = await Booking.create({
             user: req.session.userId, vehicle: vehicle._id, airport, tripType,
+            assignedDriver: vehicle.driver || null,
             vehicleSnapshot: { name: vehicle.name, type: vehicle.type, image: vehicle.images[0] || '', capacity: vehicle.capacity },
             customerInfo: { name: customerName.trim(), phone: phone.trim(), pickupLocation, dropoffLocation, luggageCount: +luggageCount || 0, passengerCount: +passengerCount, flightNumber },
             bookingDate: pickupTime, originalBookingDate: pickupTime, totalPrice: vehicle.price, note,
@@ -62,8 +63,8 @@ exports.showDetail = async (req, res, next) => {
     try {
         const query = { _id: req.params.id };
         if (req.session.role === 'user') query.user = req.session.userId;
-        if (req.session.role === 'driver') query.vehicle = { $in: await Vehicle.distinct('_id', { driver: req.session.userId }) };
-        const booking = await Booking.findOne(query).populate({ path: 'vehicle', populate: { path: 'driver', select: 'username phone driverProfile' } }).populate('user', 'username email phone');
+        if (req.session.role === 'driver') query.$or = [{ assignedDriver: req.session.userId }, { vehicle: { $in: await Vehicle.distinct('_id', { driver: req.session.userId }) } }];
+        const booking = await Booking.findOne(query).populate('assignedDriver', 'username phone driverProfile').populate({ path: 'vehicle', populate: { path: 'driver', select: 'username phone driverProfile' } }).populate('user', 'username email phone');
         if (!booking) return res.status(404).render('error', { title: 'Không tìm thấy', error: { message: 'Không tìm thấy đơn đặt xe.' } });
         const bank = await PaymentSettings.findOne({ key: 'bank-transfer' }).lean();
         const transferContent = `SGP${booking._id.toString().slice(-8).toUpperCase()}`;

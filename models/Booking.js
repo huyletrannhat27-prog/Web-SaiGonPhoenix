@@ -11,6 +11,11 @@ const bookingSchema = new mongoose.Schema({
         ref: 'Vehicle',
         required: true
     },
+    assignedDriver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    driverSnapshot: {
+        name: { type: String, default: '' },
+        licensePlate: { type: String, default: '' }
+    },
     vehicleSnapshot: {
         name: { type: String, default: 'Xe không xác định' },
         type: { type: String, default: '' },

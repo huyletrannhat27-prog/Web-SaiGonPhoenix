@@ -14,6 +14,7 @@ const { archiveOverdueBookings, findGloballyBusyVehicleIds } = require('../servi
 const { syncBookingFlight } = require('../services/flightTracker');
 const { getReviewStats } = require('../services/reviewStats');
 const { getUnansweredChatCounts } = require('../services/chatStatus');
+const { getAdminAnalytics } = require('../services/analytics');
 
 const vehicleTypes = ['4 cho','7 cho','9 cho','9 cho vip','16 cho','26 cho','29 cho','45 cho','limousine'];
 
@@ -23,6 +24,8 @@ router.use(require('./vehicleRoutes'));
 router.use(require('./chatRoutes'));
 router.use(require('./reviewRoutes'));
 router.use(require('./localizationRoutes'));
+router.use(require('./analyticsRoutes'));
+router.use(require('./profileRoutes'));
 
 router.get('/', async (req, res, next) => {
     try {
@@ -52,19 +55,19 @@ router.get('/dashboard', auth.isAuthenticated, async (req, res, next) => {
 router.get('/admin', auth.isAdmin, async (req, res, next) => {
     try {
         await archiveOverdueBookings();
-        const [bookings, vehicles, drivers, userCount, bank, imageAssets, reviews, reviewStats, unansweredChats] = await Promise.all([
-            Booking.find().populate({ path: 'vehicle', populate: { path: 'driver', select: 'username phone driverProfile' } }).populate('user', 'username email phone').sort({ bookingDate: 1 }),
+        const [bookings, vehicles, drivers, userCount, bank, imageAssets, reviews, reviewStats, unansweredChats, analytics] = await Promise.all([
+            Booking.find().populate('assignedDriver', 'username phone driverProfile').populate({ path: 'vehicle', populate: { path: 'driver', select: 'username phone driverProfile' } }).populate('user', 'username email phone').sort({ bookingDate: 1 }),
             Vehicle.find().populate('driver', 'username phone driverProfile').sort({ createdAt: -1 }),
             User.find({ role: 'driver' }).sort({ username: 1 }), User.countDocuments({ role: 'user' }),
             PaymentSettings.findOne({ key: 'bank-transfer' }).lean(), ImageAsset.find().sort({ createdAt: -1 }).lean(),
-            Review.find().populate('user', 'username').sort({ createdAt: -1 }).lean(), getReviewStats(), getUnansweredChatCounts()
+            Review.find().populate('user', 'username').sort({ createdAt: -1 }).lean(), getReviewStats(), getUnansweredChatCounts(), getAdminAnalytics(req.query)
         ]);
         const bookingGroups = {
             pending: bookings.filter(item => item.status === 'pending'),
             serving: bookings.filter(item => item.status === 'confirmed'),
             completed: bookings.filter(item => ['completed', 'cancelled', 'expired'].includes(item.status)).sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate))
         };
-        res.render('admin', { title: 'Quản trị hệ thống', bookings, bookingGroups, vehicles, drivers, vehicleTypes, userCount, bank: bank || {}, imageAssets, reviews, reviewStats, unansweredChatCounts: unansweredChats.byUser, unansweredChatTotal: unansweredChats.total });
+        res.render('admin', { title: 'Quản trị hệ thống', bookings, bookingGroups, vehicles, drivers, vehicleTypes, userCount, bank: bank || {}, imageAssets, reviews, reviewStats, analytics, unansweredChatCounts: unansweredChats.byUser, unansweredChatTotal: unansweredChats.total });
     } catch (error) { next(error); }
 });
 
@@ -72,7 +75,7 @@ router.get('/driver', auth.isDriver, async (req, res, next) => {
     try {
         await archiveOverdueBookings();
         const vehicleIds = await Vehicle.distinct('_id', { driver: req.session.userId });
-        const bookings = await Booking.find({ vehicle: { $in: vehicleIds }, status: 'confirmed' }).populate('vehicle').populate('user', 'username phone').sort({ bookingDate: 1 });
+        const bookings = await Booking.find({ $or: [{ assignedDriver: req.session.userId }, { vehicle: { $in: vehicleIds } }], status: 'confirmed' }).populate('vehicle').populate('user', 'username phone').sort({ bookingDate: 1 });
         res.render('driver', { title: 'Chuyến xe của tài xế', bookings });
     } catch (error) { next(error); }
 });
@@ -80,11 +83,14 @@ router.post('/admin/bookings/:id/status', auth.isAdmin, async (req, res, next) =
     try {
         const labels = { pending: 'Chờ xác nhận', confirmed: 'Chờ phục vụ', completed: 'Hoàn thành', cancelled: 'Đã hủy', expired: 'Quá hạn' };
         if (!['pending', 'confirmed', 'completed', 'cancelled'].includes(req.body.status)) return res.status(400).send('Trạng thái không hợp lệ');
-        const booking = await Booking.findById(req.params.id).populate('vehicle');
+        const booking = await Booking.findById(req.params.id).populate({ path: 'vehicle', populate: { path: 'driver', select: 'username driverProfile' } });
         if (!booking) { req.flash('error', 'Không tìm thấy đơn cần cập nhật.'); return res.redirect('/admin'); }
         if (req.body.status === 'confirmed') {
             const busy = await Booking.exists({ _id: { $ne: booking._id }, vehicle: booking.vehicle?._id || booking.vehicle, status: 'confirmed', bookingDate: { $gt: new Date(Date.now() - Number(process.env.BOOKING_ARCHIVE_HOURS || 2) * 3600000) } });
             if (busy) { req.flash('error', `Không thể xác nhận: xe ${booking.vehicle?.name || booking.vehicleSnapshot.name} đang phục vụ một đơn khác.`); return res.redirect('/admin#pending-bookings'); }
+            const driver = booking.vehicle?.driver;
+            booking.assignedDriver = driver?._id || driver || null;
+            booking.driverSnapshot = { name: driver?.username || '', licensePlate: driver?.driverProfile?.licensePlate || '' };
         }
         booking.status = req.body.status;
         await booking.save();

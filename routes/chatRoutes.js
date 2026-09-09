@@ -43,12 +43,14 @@ async function resolveConversation(req) {
         partner = await User.findOne({ _id: userId, role: 'user', isActive: true });
     } else if (role === 'driver') {
         booking = await Booking.findOne({ _id: bookingId, status: 'confirmed' }).populate('vehicle');
-        if (!booking || String(booking.vehicle?.driver) !== currentId) throw Object.assign(new Error('Bạn không được phân công chuyến này.'), { status: 403 });
+        const assignedId = booking?.assignedDriver || booking?.vehicle?.driver;
+        if (!booking || String(assignedId) !== currentId) throw Object.assign(new Error('Bạn không được phân công chuyến này.'), { status: 403 });
         partner = await User.findById(booking.user);
     } else if ((req.body.target || req.query.target) === 'driver') {
         booking = await Booking.findOne({ _id: bookingId, user: currentId, status: 'confirmed' }).populate('vehicle');
-        if (!booking?.vehicle?.driver) throw Object.assign(new Error('Chuyến chưa có tài xế để chat.'), { status: 400 });
-        partner = await User.findOne({ _id: booking.vehicle.driver, role: 'driver', isActive: true });
+        const assignedId = booking?.assignedDriver || booking?.vehicle?.driver;
+        if (!assignedId) throw Object.assign(new Error('Chuyến chưa có tài xế để chat.'), { status: 400 });
+        partner = await User.findOne({ _id: assignedId, role: 'driver', isActive: true });
     } else {
         partner = await User.findOne({ role: 'admin', isActive: true }).sort({ createdAt: 1 });
     }

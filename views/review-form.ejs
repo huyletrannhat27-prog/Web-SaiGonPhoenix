@@ -1,5 +1,5 @@
 <% layout('layout') -%>
-<% const vehicleName = booking.vehicle?.name || booking.vehicleSnapshot?.name || 'Xe đã phục vụ'; const driverName = booking.vehicle?.driver?.username || 'Tài xế phụ trách'; %>
+<% const vehicleName = booking.vehicle?.name || booking.vehicleSnapshot?.name || 'Xe đã phục vụ'; const driverName = booking.assignedDriver?.username || booking.vehicle?.driver?.username || booking.driverSnapshot?.name || 'Tài xế phụ trách'; %>
 <section class="review-form-shell" data-i18n-scope>
     <div class="review-form-hero">
         <span class="section-kicker" data-i18n="completed_trip">CHUYẾN ĐI ĐÃ HOÀN THÀNH</span>

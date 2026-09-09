@@ -37,6 +37,7 @@
                     <li><a class="nav-link" href="/reviews"><i class="fa-solid fa-star"></i><span data-i18n="reviews">Đánh giá</span></a></li>
                     <li><a class="nav-link" href="/about"><i class="fa-regular fa-circle-question"></i><span data-i18n="about">Giới thiệu</span></a></li>
                     <% if (session.userId) { %>
+                        <li><a class="nav-link" href="/profile"><i class="fa-regular fa-id-badge"></i><span data-i18n="my_account">Tài khoản</span></a></li>
                         <li><a class="nav-link" href="<%= session.role === 'admin' ? '/admin' : session.role === 'driver' ? '/driver' : '/dashboard' %>"><i class="fa-regular fa-user"></i><span data-i18n="<%= session.role === 'admin' ? 'admin' : session.role === 'driver' ? 'driver_trips' : 'my_trips' %>"><%= session.role === 'admin' ? 'Quản trị' : session.role === 'driver' ? 'Chuyến tài xế' : 'Chuyến của tôi' %></span></a></li>
                         <li><form method="post" action="/logout"><button class="nav-link nav-logout border-0 bg-transparent" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i><span data-i18n="logout">Đăng xuất</span></button></form></li>
                     <% } else { %>

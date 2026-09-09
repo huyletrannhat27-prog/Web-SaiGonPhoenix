@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    profile: {
+        dateOfBirth: { type: Date, default: null },
+        gender: { type: String, enum: ['', 'male', 'female', 'other'], default: '' },
+        address: { type: String, trim: true, maxlength: 250, default: '' },
+        city: { type: String, trim: true, maxlength: 100, default: '' },
+        country: { type: String, trim: true, maxlength: 100, default: '' },
+        emergencyContactName: { type: String, trim: true, maxlength: 100, default: '' },
+        emergencyContactPhone: { type: String, trim: true, maxlength: 30, default: '' }
+    },
     role: {
         type: String,
         enum: ['user', 'admin', 'driver'],

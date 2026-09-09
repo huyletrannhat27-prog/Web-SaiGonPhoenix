@@ -14,6 +14,7 @@ router.get('/bookings/:id/review', auth.isAuthenticated, async (req, res, next) 
     try {
         if (req.session.role !== 'user') return res.redirect(`/bookings/${req.params.id}`);
         const booking = await Booking.findOne({ _id: req.params.id, user: req.session.userId })
+            .populate('assignedDriver', 'username')
             .populate({ path: 'vehicle', populate: { path: 'driver', select: 'username' } });
         if (!booking) return res.status(404).render('error', { title: 'Không tìm thấy', error: { message: 'Không tìm thấy đơn đặt xe.' } });
         if (booking.status !== 'completed') {
@@ -29,6 +30,7 @@ router.post('/bookings/:id/review', auth.isAuthenticated, upload.array('images',
     try {
         if (req.session.role !== 'user') { await removeUploadedFiles(req.files); return res.status(403).send('Không có quyền đánh giá.'); }
         const booking = await Booking.findOne({ _id: req.params.id, user: req.session.userId })
+            .populate('assignedDriver', 'username')
             .populate({ path: 'vehicle', populate: { path: 'driver', select: 'username' } });
         const tripRating = Number(req.body.tripRating);
         const driverRating = Number(req.body.driverRating);
@@ -43,7 +45,7 @@ router.post('/bookings/:id/review', auth.isAuthenticated, upload.array('images',
             req.flash('error', 'Đơn này đã được đánh giá trước đó.');
             return res.redirect(`/bookings/${booking._id}`);
         }
-        const driver = booking.vehicle?.driver;
+        const driver = booking.assignedDriver || booking.vehicle?.driver;
         await Review.create({
             booking: booking._id,
             user: req.session.userId,
