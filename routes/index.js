@@ -8,6 +8,8 @@ const ImageAsset = require('../models/ImageAsset');
 const SiteSettings = require('../models/SiteSettings');
 const Review = require('../models/Review');
 const upload = require('../config/upload');
+const vehiclePhotosUpload = require('../config/vehiclePhotosUpload');
+const { prepareGallery, saveUploadAssets, discardUploads } = require('../services/vehicleGallery');
 const fs = require('fs/promises');
 const path = require('path');
 const { archiveOverdueBookings, findGloballyBusyVehicleIds } = require('../services/bookingLifecycle');
@@ -26,6 +28,7 @@ router.use(require('./reviewRoutes'));
 router.use(require('./localizationRoutes'));
 router.use(require('./analyticsRoutes'));
 router.use(require('./profileRoutes'));
+router.use(require('./calendarRoutes'));
 
 router.get('/', async (req, res, next) => {
     try {
@@ -131,15 +134,16 @@ router.post('/admin/drivers/:id/edit', auth.isAdmin, async (req, res, next) => {
         req.flash('success', `Đã cập nhật tài xế ${driver.username}.`); res.redirect('/admin#drivers');
     } catch (error) { next(error); }
 });
-router.post('/admin/vehicles', auth.isAdmin, async (req, res, next) => {
+router.post('/admin/vehicles', auth.isAdmin, vehiclePhotosUpload, async (req, res, next) => {
     try {
         const data = { name: req.body.name, type: req.body.type, price: +req.body.price, capacity: +req.body.capacity, luggageCapacity: +req.body.luggageCapacity || 0, description: req.body.description, driver: req.body.driverId || null };
-        const selectedAsset = req.body.imageAssetId ? await ImageAsset.findById(req.body.imageAssetId) : null;
-        if (selectedAsset) data.images = [selectedAsset.url];
-        else if (req.body.image?.trim()) data.images = [req.body.image.trim()];
-        await Vehicle.create(data);
+        Object.assign(data, await prepareGallery(req));
+        const vehicle = new Vehicle(data);
+        await vehicle.validate();
+        await saveUploadAssets(req);
+        await vehicle.save();
         req.flash('success', 'Đã thêm xe mới.'); res.redirect('/admin#vehicles');
-    } catch (error) { next(error); }
+    } catch (error) { await discardUploads(req); next(error); }
 });
 router.get('/admin/vehicles/:id/edit', auth.isAdmin, async (req, res, next) => {
     try {
@@ -148,14 +152,15 @@ router.get('/admin/vehicles/:id/edit', auth.isAdmin, async (req, res, next) => {
         res.render('vehicle-edit', { title: `Chỉnh sửa ${vehicle.name}`, vehicle, imageAssets, drivers, vehicleTypes, error: null });
     } catch (error) { next(error); }
 });
-router.post('/admin/vehicles/:id/edit', auth.isAdmin, async (req, res, next) => {
+router.post('/admin/vehicles/:id/edit', auth.isAdmin, vehiclePhotosUpload, async (req, res, next) => {
     try {
         const vehicle = await Vehicle.findById(req.params.id);
-        if (!vehicle) return res.status(404).render('error', { title: 'Không tìm thấy xe', error: { message: 'Xe này không tồn tại hoặc đã bị xóa.' } });
+        if (!vehicle) { await discardUploads(req); return res.status(404).render('error', { title: 'Không tìm thấy xe', error: { message: 'Xe này không tồn tại hoặc đã bị xóa.' } }); }
         const price = Number(req.body.price);
         const capacity = Number(req.body.capacity);
         const luggageCapacity = Number(req.body.luggageCapacity || 0);
         if (!req.body.name?.trim() || !vehicleTypes.includes(req.body.type) || !Number.isFinite(price) || price < 0 || !Number.isInteger(capacity) || capacity < 1 || !Number.isInteger(luggageCapacity) || luggageCapacity < 0) {
+            await discardUploads(req);
             const [imageAssets, drivers] = await Promise.all([ImageAsset.find().sort({ createdAt: -1 }).lean(), User.find({ role: 'driver', isActive: true })]);
             return res.status(400).render('vehicle-edit', { title: `Chỉnh sửa ${vehicle.name}`, vehicle: Object.assign(vehicle, req.body), imageAssets, drivers, vehicleTypes, error: 'Thông tin xe chưa hợp lệ. Vui lòng kiểm tra lại.' });
         }
@@ -167,13 +172,13 @@ router.post('/admin/vehicles/:id/edit', auth.isAdmin, async (req, res, next) => 
         vehicle.description = req.body.description?.trim() || '';
         vehicle.isAvailable = req.body.isAvailable === 'true';
         vehicle.driver = req.body.driverId || null;
-        const selectedAsset = req.body.imageAssetId ? await ImageAsset.findById(req.body.imageAssetId) : null;
-        if (selectedAsset) vehicle.images = [selectedAsset.url];
-        else if (req.body.image?.trim()) vehicle.images = [req.body.image.trim()];
+        Object.assign(vehicle, await prepareGallery(req, vehicle));
+        await vehicle.validate();
+        await saveUploadAssets(req);
         await vehicle.save();
         req.flash('success', `Đã cập nhật xe ${vehicle.name}.`);
         res.redirect('/admin#vehicles');
-    } catch (error) { next(error); }
+    } catch (error) { await discardUploads(req); next(error); }
 });
 router.post('/admin/vehicles/:id/toggle', auth.isAdmin, async (req, res, next) => {
     try { const vehicle = await Vehicle.findById(req.params.id); if (vehicle) { vehicle.isAvailable = !vehicle.isAvailable; await vehicle.save(); } res.redirect('/admin#vehicles'); } catch (error) { next(error); }
@@ -200,7 +205,7 @@ router.post('/admin/images/:id/delete', auth.isAdmin, async (req, res, next) => 
     try {
         const image = await ImageAsset.findById(req.params.id);
         if (!image) { req.flash('error', 'Không tìm thấy ảnh.'); return res.redirect('/admin#image-library'); }
-        if (await Vehicle.exists({ images: image.url })) { req.flash('error', 'Ảnh đang được một xe sử dụng nên chưa thể xóa.'); return res.redirect('/admin#image-library'); }
+        if (await Vehicle.exists({ $or: [{ images: image.url }, { interiorImages: image.url }, { spinImages: image.url }] })) { req.flash('error', 'Ảnh đang được một xe sử dụng nên chưa thể xóa.'); return res.redirect('/admin#image-library'); }
         const uploadRoot = path.resolve(__dirname, '..', 'public', 'uploads', 'vehicles');
         const filePath = path.resolve(uploadRoot, image.filename);
         if (!filePath.startsWith(`${uploadRoot}${path.sep}`)) throw new Error('Đường dẫn ảnh không hợp lệ.');

@@ -1,0 +1,24 @@
+/* Comfortable reading sizes without scaling or cropping the whole page. */
+body { font-size: 17px; line-height: 1.75; }
+.navbar-custom .nav-link { font-size: 15px; padding: 10px !important; }
+.navbar-custom .nav-link i { font-size: 14px; }
+.brand-wordmark strong { font-size: 20px; }.brand-wordmark small { font-size: 10px; }
+.topbar, .display-control select { font-size: 14px; }
+.banner-content p { font-size: 18px; }.banner-content .eyebrow, .section-kicker { font-size: 14px; }
+.quick-booking-title strong { font-size: 18px; }.quick-booking-title small { font-size: 15px; }
+.smart-field > span, .smart-field select, .smart-field input { font-size: 16px; }
+.btn-hero, .btn-hero-outline, .quick-search-btn, .text-link, .vehicle-category-tabs button { font-size: 16px; }
+.trust-strip span, .trust-review-link small { font-size: 14px; }
+.vehicle-showcase h3 { font-size: 21px; }.vehicle-showcase p { font-size: 16px; min-height: 0; }.vehicle-meta { font-size: 14px; flex-wrap: wrap; gap: 8px 15px; }.vehicle-footer small { font-size: 14px; }.vehicle-footer strong { font-size: 24px; }.vehicle-badge { font-size: 14px; }
+.home-planner p, .home-planner a, .experience-section p, .experience-grid span { font-size: 16px; }.experience-grid strong { font-size: 18px; }
+.modern-field > span, .modern-field input, .modern-field select, .modern-field textarea, .form-control, .form-select, .form-label { font-size: 16px; }
+.auth-aside p, .auth-benefits span, .auth-link, .auth-switch, .modern-auth-card .auth-heading p { font-size: 16px; }
+.booking-section-title p, .trip-type-picker small, .availability-message, .booking-trust span, .booking-stepper > div strong, .quick-time-list button, .payment-options-modern small, .summary-vehicle small, .summary-vehicle span, .summary-route span small, .summary-info b, .summary-price em { font-size: 14px; }
+.payment-options-modern strong, .payment-options-modern b, .summary-vehicle strong, .summary-route span strong, .summary-card .btn-submit, .summary-due, .modern-vehicle-picker .vehicle-content > strong { font-size: 16px; }
+.modern-vehicle-picker .vehicle-content > small, .modern-vehicle-picker .vehicle-content > b small { font-size: 14px; }
+.profile-hero p, .profile-summary p, .profile-summary dd, .profile-form .modern-field > span, .profile-security-note, .profile-form-heading p, .profile-section-hint { font-size: 15px; }
+.chat-bubble p, .chat-compose textarea, .chat-translation-result p { font-size: 16px; }.chat-header strong { font-size: 17px; }.chat-header small, .chat-bubble small, .chat-footer, .chat-translate-button { font-size: 13px; }.chat-fab { font-size: 15px; }
+.footer-description, .footer-custom a, .footer-custom p, .footer-social-grid span { font-size: 15px; }.footer-bottom { font-size: 14px; }
+/* Collapse navigation sooner so larger labels do not squeeze the logo. */
+@media (min-width: 992px) and (max-width: 1399px) { .navbar-expand-lg .navbar-toggler { display: block; }.navbar-expand-lg .navbar-collapse { flex-basis: 100%; }.navbar-expand-lg .navbar-collapse:not(.show) { display: none !important; }.navbar-expand-lg .navbar-collapse.show { display: block !important; }.navbar-expand-lg .navbar-nav { flex-direction: column; align-items: stretch !important; margin-top: 16px; }.navbar-expand-lg > .container { flex-wrap: wrap; }.navbar-expand-lg .nav-link { padding: 13px !important; } }
+@media (max-width: 575px) { .banner-content p { font-size: 16px; }.smart-field input, .smart-field select, input.form-control, textarea.form-control { font-size: 16px; }.trust-strip span, .trust-review-link small { font-size: 13px; }.vehicle-showcase .vehicle-content { padding: 20px; } }

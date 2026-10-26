@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toLocalInputValue = date => new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
     const minimumPickup = new Date(Date.now() + 2 * 60 * 60 * 1000);
-    document.querySelectorAll('input[type="datetime-local"]').forEach(input => {
+    document.querySelectorAll('input[type="datetime-local"]:not([data-calendar-input])').forEach(input => {
         input.min = toLocalInputValue(minimumPickup);
         if (!input.value) input.value = toLocalInputValue(new Date(Date.now() + 3 * 60 * 60 * 1000));
     });

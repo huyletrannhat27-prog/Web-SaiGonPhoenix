@@ -1,0 +1,21 @@
+<section class="col-12 vehicle-photo-editor" data-photo-editor>
+    <h3><i class="fa-regular fa-images"></i> Ảnh để khách xem xe</h3>
+    <p>Thêm ảnh thật của từng xe. JPG, PNG, WEBP hoặc GIF, tối đa 5 MB/ảnh và 36 tệp mỗi lần lưu. Ảnh tải lên cũng được lưu trong thư viện.</p>
+    <% const photoGroups = [['images','exterior','Ngoại thất','Ảnh đầu tiên là ảnh bìa của xe. Tối đa 12 ảnh.'],['interiorImages','interior','Nội thất','Thêm ảnh ghế ngồi, khoang hành lý và các tiện nghi. Tối đa 12 ảnh.'],['spinImages','spin','Xoay 360°','Cần 8–36 ảnh cùng một xe chụp lần lượt quanh xe. Đặt tên 01, 02… để ảnh tải lên được xếp đúng thứ tự.']]; %>
+    <% photoGroups.forEach(([key,field,label,hint]) => { const urls = photoVehicle?.[key] || []; %>
+    <details class="photo-group" data-photo-group="<%= field %>" <%= field !== 'spin' ? 'open' : '' %>>
+        <summary><span><%= label %></span><small><%= urls.length %> ảnh đã lưu</small></summary>
+        <div class="photo-group-body">
+            <p><%= hint %></p>
+            <div class="photo-existing-grid"><% urls.forEach((url, index) => { %><div data-existing-photo data-url="<%= url %>"><img src="<%= url %>" alt="<%= label %> <%= index + 1 %>" loading="lazy"><span><%= index + 1 %></span><button type="button" data-remove-photo aria-label="Bỏ ảnh <%= label %> <%= index + 1 %>">×</button></div><% }) %></div>
+            <label class="photo-upload-label"><span><i class="fa-solid fa-cloud-arrow-up"></i> Thêm ảnh <%= label.toLowerCase() %> từ máy</span><input type="file" name="<%= field %>Files" accept="image/jpeg,image/png,image/webp,image/gif" multiple data-photo-files></label>
+            <div class="photo-file-preview" data-photo-file-preview aria-live="polite"></div>
+            <details class="photo-link-options"><summary>Ảnh từ thư viện hoặc liên kết có sẵn</summary>
+                <label>Danh sách liên kết ảnh hiện tại — mỗi dòng một ảnh, theo thứ tự hiển thị<textarea class="form-control" name="<%= field %>Urls" rows="3" data-photo-urls><%= urls.join('\n') %></textarea></label>
+                <% if (field !== 'spin' && imageAssets.length) { %><div class="photo-library-options"><% imageAssets.forEach(asset => { %><label><input type="checkbox" name="<%= field %>AssetIds" value="<%= asset._id %>"><img src="<%= asset.url %>" alt="" loading="lazy"><span><%= asset.originalName %></span></label><% }) %></div><% } %>
+            </details>
+            <small class="photo-save-hint">Ảnh chỉ được thêm hoặc bỏ khỏi xe khi bạn bấm Lưu. Bỏ ảnh khỏi xe không xóa ảnh trong thư viện.</small>
+        </div>
+    </details>
+    <% }) %>
+</section>

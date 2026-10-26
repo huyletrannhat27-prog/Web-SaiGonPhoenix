@@ -1,0 +1,52 @@
+<% layout('layout') -%>
+<link rel="stylesheet" href="/css/calendar.css">
+<section class="planner" data-calendar data-authenticated="<%= Boolean(session.userId) %>" data-token="<%= calendarToken %>">
+    <header class="planner-heading">
+        <div><span class="section-kicker" data-i18n="cal_eyebrow">MỖI NGÀY, MỘT HÀNH TRÌNH</span><h1 data-i18n="calendar">Lịch của tôi</h1><p data-i18n="cal_intro">Dành chỗ cho những kế hoạch quan trọng.</p></div>
+        <% if (session.userId) { %><button type="button" class="planner-primary" data-new-event><i class="fa-solid fa-plus"></i> <span data-i18n="cal_create">Tạo lịch hẹn</span></button><% } %>
+    </header>
+    <% if (!session.userId) { %>
+    <div class="planner-welcome"><div class="planner-welcome-icon"><i class="fa-regular fa-calendar-check"></i></div><span class="section-kicker">SAIGONPHOENIX PLANNER</span><h2 data-i18n="cal_welcome">Một nơi cho mọi kế hoạch của bạn</h2><p data-i18n="cal_signin_hint">Đăng nhập để lưu lịch hẹn, ghi chú và sắp xếp hành trình. Lịch cá nhân chỉ hiển thị với bạn.</p><a class="planner-primary" href="/login?next=/calendar" data-i18n="login">Đăng nhập</a><a class="planner-link" href="/register" data-i18n="register">Đăng ký</a><div class="planner-features"><span data-i18n="cal_feature_month">Xem lịch theo tháng</span><span data-i18n="cal_feature_notes">Ghi chú từng lịch hẹn</span><span data-i18n="cal_feature_private">Lưu riêng theo tài khoản</span></div></div>
+    <% } else { %>
+    <div class="planner-layout">
+        <aside class="planner-sidebar">
+            <div class="planner-sidebar-title"><i class="fa-regular fa-calendar"></i><strong data-i18n="cal_overview">Kế hoạch của bạn</strong></div>
+            <div class="planner-mini" data-mini-calendar data-no-translate></div>
+            <div class="planner-filters"><h2 data-i18n="cal_categories">Nhóm lịch</h2>
+                <% [['personal','Cá nhân'],['work','Công việc'],['travel','Chuyến đi']].forEach(([key,label]) => { %><label><input type="checkbox" data-category-filter="<%= key %>" checked><span class="planner-dot <%= key %>"></span><span data-i18n="cal_<%= key %>"><%= label %></span></label><% }) %>
+            </div>
+            <div class="planner-tip"><i class="fa-regular fa-lightbulb"></i><strong data-i18n="cal_tip_title">Một chút chuẩn bị, thêm an tâm</strong><p data-i18n="cal_tip">Chọn một ngày trên lịch để ghi lại cuộc hẹn hoặc kế hoạch chuyến đi.</p></div>
+            <div class="planner-timezone"><i class="fa-solid fa-globe"></i> <span data-i18n="cal_timezone">Giờ Việt Nam · GMT+7</span></div>
+        </aside>
+        <div class="planner-main">
+            <div class="planner-toolbar">
+                <div class="planner-month-nav"><button type="button" class="planner-icon" data-prev-month aria-label="Tháng trước" data-i18n-aria-label="cal_prev">‹</button><h2 data-month-title data-no-translate></h2><button type="button" class="planner-icon" data-next-month aria-label="Tháng sau" data-i18n-aria-label="cal_next">›</button><button type="button" class="planner-button" data-today data-i18n="cal_today">Hôm nay</button></div>
+                <div class="planner-view-toggle" role="group" aria-label="Chế độ xem" data-i18n-aria-label="cal_view"><button type="button" data-view="month" aria-pressed="true" data-i18n="cal_month">Tháng</button><button type="button" data-view="agenda" aria-pressed="false" data-i18n="cal_agenda">Danh sách</button></div>
+            </div>
+            <div class="planner-search-row"><label class="planner-search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" data-calendar-search placeholder="Tìm trong tháng này..." data-i18n-placeholder="cal_search" aria-label="Tìm lịch hẹn" data-i18n-aria-label="cal_search_label"></label><span data-event-count data-no-translate></span></div>
+            <div class="planner-status" role="status" aria-live="polite" data-calendar-status data-no-translate></div>
+            <div class="planner-grid" data-calendar-grid data-no-translate></div>
+            <div class="planner-agenda" data-calendar-agenda data-no-translate hidden></div>
+            <div class="planner-bottom"><span><span class="planner-today-dot"></span> <span data-i18n="cal_today">Hôm nay</span></span><span data-i18n="cal_private">Lịch riêng tư · Lưu theo tài khoản</span></div>
+        </div>
+        <aside class="planner-day-panel" data-no-translate><span class="section-kicker" data-day-eyebrow></span><h2 data-selected-date></h2><div data-day-events></div><button type="button" class="planner-button planner-add-day" data-new-event data-add-day></button></aside>
+    </div>
+    <dialog class="planner-dialog" data-event-dialog aria-labelledby="event-dialog-title">
+        <form data-event-form>
+            <header><div><span class="section-kicker" data-i18n="cal_details">CHI TIẾT LỊCH HẸN</span><h2 id="event-dialog-title" data-dialog-title data-no-translate></h2></div><button type="button" class="planner-icon" data-close-dialog aria-label="Đóng" data-i18n-aria-label="cal_close">×</button></header>
+            <input type="hidden" name="eventId">
+            <label><span data-i18n="cal_title">Tiêu đề</span><input name="title" required maxlength="120" placeholder="Ví dụ: Đón gia đình ở sân bay" data-i18n-placeholder="cal_title_placeholder" autocomplete="off"></label>
+            <div class="planner-form-row"><label><span data-i18n="cal_category">Nhóm lịch</span><select name="category"><option value="personal" data-i18n="cal_personal">Cá nhân</option><option value="work" data-i18n="cal_work">Công việc</option><option value="travel" data-i18n="cal_travel">Chuyến đi</option></select></label><label class="planner-allday"><input type="checkbox" name="allDay"><span data-i18n="cal_allday">Cả ngày</span></label></div>
+            <div class="planner-form-row"><label><span data-i18n="cal_start">Bắt đầu</span><input type="datetime-local" name="startsAt" required data-calendar-input min="2000-01-01T00:00" max="2100-12-30T23:59"></label><label><span data-i18n="cal_end">Kết thúc</span><input type="datetime-local" name="endsAt" required data-calendar-input min="2000-01-01T00:00" max="2100-12-31T23:59"></label></div>
+            <small class="planner-form-hint" data-i18n="cal_date_hint">Giờ Việt Nam (GMT+7). Với lịch cả ngày, chọn ngày cuối cùng bạn muốn ghi lịch.</small>
+            <label><span data-i18n="cal_location">Địa điểm</span><input name="location" maxlength="250" placeholder="Thêm địa điểm" data-i18n-placeholder="cal_location_placeholder"></label>
+            <label><span data-i18n="cal_notes">Ghi chú</span><textarea name="notes" maxlength="3000" rows="3" placeholder="Những điều cần chuẩn bị..." data-i18n-placeholder="cal_notes_placeholder"></textarea></label>
+            <p class="planner-form-error" data-form-error role="alert" data-no-translate></p>
+            <div class="planner-export" data-export-area hidden><a href="#" target="_blank" rel="noopener noreferrer" data-google-link><i class="fa-brands fa-google"></i> <span data-i18n="cal_google">Thêm vào Google Calendar</span> ↗</a><small data-i18n="cal_google_hint">Tạo bản sao trên Google Calendar. Thay đổi sau đó không tự đồng bộ.</small></div>
+            <div class="planner-delete-confirm" data-delete-confirm hidden><p data-i18n="cal_delete_question">Xóa lịch hẹn này? Bạn không thể hoàn tác thao tác này.</p><button type="button" class="planner-danger" data-confirm-delete data-i18n="cal_confirm_delete">Xóa lịch hẹn</button><button type="button" class="planner-button" data-cancel-delete data-i18n="cal_keep">Giữ lại</button></div>
+            <footer><button type="button" class="planner-danger" data-delete-event hidden data-i18n="cal_delete">Xóa</button><div><button type="button" class="planner-button" data-close-dialog data-i18n="cal_cancel">Hủy</button><button type="submit" class="planner-primary" data-save-event data-i18n="cal_save">Lưu lịch hẹn</button></div></footer>
+        </form>
+    </dialog>
+    <% } %>
+</section>
+<script src="/js/calendar.js" defer></script>

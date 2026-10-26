@@ -2,6 +2,14 @@ const router = require('express').Router();
 const Vehicle = require('../models/Vehicle');
 const Booking = require('../models/Booking');
 const { findGloballyBusyVehicleIds } = require('../services/bookingLifecycle');
+router.get('/api/vehicles/:id/gallery', async (req, res, next) => {
+    if (!/^[a-f\d]{24}$/i.test(req.params.id)) return res.status(400).json({ error: 'Mã xe không hợp lệ.' });
+    try {
+        const vehicle = await Vehicle.findOne({ _id: req.params.id, isAvailable: true }).select('name images interiorImages spinImages capacity luggageCapacity').lean();
+        if (!vehicle) return res.status(404).json({ error: 'Xe này hiện không còn hiển thị.' });
+        res.set('Cache-Control', 'no-store').json(vehicle);
+    } catch (error) { next(error); }
+});
 router.get('/api/vehicles', async (req, res, next) => {
     try {
         const filter = { isAvailable: true };

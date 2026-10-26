@@ -1,16 +1,16 @@
 <% layout('layout') -%>
 <div class="auth-shell fade-in">
-    <section class="auth-aside"><span class="eyebrow"><i class="fa-solid fa-plane-departure"></i> Hành trình thông minh</span><h1>Chào mừng bạn<br>quay trở lại.</h1><p>Đăng nhập để đặt xe nhanh hơn, thanh toán thuận tiện và theo dõi mọi chuyến đi.</p><div class="auth-benefits"><span><i class="fa-solid fa-check"></i> Lưu thông tin hành khách</span><span><i class="fa-solid fa-check"></i> Quản lý lịch sử chuyến</span><span><i class="fa-solid fa-check"></i> Nhận hỗ trợ từ admin</span></div></section>
+    <section class="auth-aside"><span class="eyebrow"><i class="fa-solid fa-plane-departure"></i> <span data-i18n="smart_journey">Hành trình chủ động</span></span><h1 data-i18n="login_welcome">Chào mừng bạn trở lại.</h1><p data-i18n="login_intro">Đăng nhập để đặt xe, quản lý chuyến đi và lưu lịch hẹn của bạn.</p><div class="auth-benefits"><span><i class="fa-solid fa-check"></i> <span data-i18n="passenger_details">Lưu thông tin hành khách</span></span><span><i class="fa-solid fa-check"></i> <span data-i18n="trip_management">Quản lý lịch sử chuyến</span></span><span><i class="fa-solid fa-check"></i> <span data-i18n="support_team">Nhận hỗ trợ từ admin</span></span></div></section>
     <section class="auth-card modern-auth-card">
-        <div class="card-body"><div class="auth-heading"><span class="auth-icon"><i class="fa-regular fa-user"></i></span><h2>Đăng nhập</h2><p>Tiếp tục hành trình cùng SaiGonPhoenix</p></div>
+        <div class="card-body"><div class="auth-heading"><span class="auth-icon"><i class="fa-regular fa-user"></i></span><h2 data-i18n="login">Đăng nhập</h2><p><span data-i18n="login_continue">Tiếp tục hành trình cùng SaiGonPhoenix</span></p></div>
             <% if (error) { %><div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation me-2"></i><%= error %></div><% } %>
             <form action="/login" method="post">
                 <label class="modern-field"><span>Email</span><div><i class="fa-regular fa-envelope"></i><input type="email" name="email" value="<%= form.email || '' %>" placeholder="ban@example.com" autocomplete="email" required></div></label>
-                <label class="modern-field"><span>Mật khẩu</span><div><i class="fa-solid fa-lock"></i><input type="password" name="password" placeholder="Nhập mật khẩu" autocomplete="current-password" required><button type="button" class="password-toggle" data-password-toggle aria-label="Hiện mật khẩu"><i class="fa-regular fa-eye"></i></button></div></label>
-                <div class="d-flex justify-content-end mb-4"><a href="/forgot-password" class="auth-link">Quên mật khẩu?</a></div>
-                <button type="submit" class="btn-submit">Đăng nhập <i class="fa-solid fa-arrow-right"></i></button>
+                <label class="modern-field"><span><span data-i18n="password">Mật khẩu</span></span><div><i class="fa-solid fa-lock"></i><input type="password" name="password" placeholder="Nhập mật khẩu" data-i18n-placeholder="password_placeholder" autocomplete="current-password" required><button type="button" class="password-toggle" data-password-toggle aria-label="Hiện mật khẩu"><i class="fa-regular fa-eye"></i></button></div></label>
+                <div class="d-flex justify-content-end mb-4"><a href="/forgot-password" class="auth-link"><span data-i18n="forgot_password">Quên mật khẩu?</span></a></div>
+                <button type="submit" class="btn-submit"><span data-i18n="login">Đăng nhập</span> <i class="fa-solid fa-arrow-right"></i></button>
             </form>
-            <div class="auth-switch">Chưa có tài khoản? <a href="/register">Đăng ký miễn phí</a></div>
+            <div class="auth-switch"><span data-i18n="no_account">Chưa có tài khoản?</span> <a href="/register"><span data-i18n="register_free">Đăng ký miễn phí</span></a></div>
         </div>
     </section>
 </div>

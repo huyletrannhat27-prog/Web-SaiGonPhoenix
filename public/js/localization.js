@@ -59,12 +59,16 @@
     Object.assign(en, enAdditions);
     Object.assign(dictionaries['zh-CN'], zhAdditions);
     Object.assign(dictionaries.ko, koAdditions);
+    Object.assign(viAdditions, window.SGP_COPY?.vi || {});
+    Object.entries(window.SGP_COPY || {}).forEach(([language, copy]) => {
+        if (language !== 'vi') Object.assign(dictionaries[language] || (dictionaries[language] = {}), copy);
+    });
 
     const languageNames = { vi:'Tiếng Việt',en:'English','zh-CN':'中文',ko:'한국어',ja:'日本語',th:'ไทย',fr:'Français',de:'Deutsch',es:'Español',pt:'Português',ru:'Русский',it:'Italiano',nl:'Nederlands',ar:'العربية',hi:'हिन्दी',id:'Bahasa Indonesia',ms:'Bahasa Melayu',tl:'Filipino',km:'ខ្មែរ',lo:'ລາວ' };
     const originalLooseText = new WeakMap();
     const machineTranslations = new Map();
-    const vietnameseText = /[ăâđêôơưĂÂĐÊÔƠƯ]|[àáạảãèéẹẻẽìíịỉĩòóọỏõùúụủũỳýỵỷỹ]/iu;
-    const translatableTags = new Set(['H1','H2','H3','H4','H5','H6','LABEL','BUTTON','A','TH','DT','OPTION','P','SMALL','SPAN','OUTPUT','LEGEND']);
+    const pendingTranslations = new Set();
+    const failedTranslations = new Set();
     let languageGeneration = 0;
     let machineTimer = null;
 
@@ -75,13 +79,14 @@
         while (walker.nextNode()) nodes.push(walker.currentNode);
         nodes.forEach(node => {
             const parent = node.parentElement;
-            if (!parent || parent.closest('script,style,[data-i18n],.chat-bubble,.review-comment,.notranslate')) return;
+            if (!parent || parent.closest('script,style,[data-i18n],.chat-bubble,.review-comment,.notranslate,[data-no-translate]')) return;
             if (!originalLooseText.has(node)) originalLooseText.set(node, node.data);
             const original = originalLooseText.get(node);
             const trimmed = original.trim();
             let translated = trimmed;
             const key = reverseVietnamese.get(trimmed);
-            if (language !== 'vi' && key) translated = selected?.[key] || trimmed;
+            if (language !== 'vi' && key) translated = selected?.[key] || en[key] || trimmed;
+            else if (language === 'vi' && key) translated = viAdditions[key];
             else if (language !== 'vi') {
                 const passengerMatch = trimmed.match(/^(\d+)\s+khách$/);
                 const luggageMatch = trimmed.match(/^(\d+)\s+kiện$/);
@@ -91,7 +96,8 @@
                 if (seatsMatch) translated = `${seatsMatch[1]} ${selected?.seats_unit || en.seats_unit || 'seats'}`;
                 if (trimmed === '/ lượt') translated = selected?.per_trip || en.per_trip || '/ trip';
             }
-            node.data = original.replace(trimmed, translated);
+            const result = original.replace(trimmed, translated);
+            if (node.data !== result) node.data = result;
         });
         document.querySelectorAll('[placeholder]:not([data-i18n-placeholder])').forEach(element => {
             if (!element.dataset.loosePlaceholderVi) element.dataset.loosePlaceholderVi = element.placeholder;
@@ -111,11 +117,17 @@
             if (!clean) return;
             const cacheKey = `${sourceLanguage}|${language}|${clean}`;
             if (machineTranslations.has(cacheKey)) { apply(machineTranslations.get(cacheKey)); return; }
-            if (!requests.has(cacheKey)) requests.set(cacheKey, { id: `ui-${sequence++}`, text: clean, sourceLanguage, apply: [] });
+            const requestKey = `${generation}|${cacheKey}`;
+            if (!requests.has(cacheKey)) {
+                if (pendingTranslations.has(requestKey) || failedTranslations.has(requestKey)) return;
+                pendingTranslations.add(requestKey);
+                requests.set(cacheKey, { id: `ui-${sequence++}`, text: clean, sourceLanguage, requestKey, apply: [] });
+            }
             requests.get(cacheKey).apply.push(apply);
         };
         const collectAttribute = (selector, keyDataset, originalDataset, property, attributeName) => {
             document.querySelectorAll(selector).forEach(element => {
+                if (element.closest('[data-no-translate],.notranslate')) return;
                 const key = element.dataset[keyDataset];
                 if (!key || explicit[key]) return;
                 const original = element.dataset[originalDataset] || '';
@@ -134,46 +146,15 @@
         collectAttribute('[data-i18n-title]', 'i18nTitle', 'i18nTitleVi', 'title');
         collectAttribute('[data-i18n-aria-label]', 'i18nAriaLabel', 'i18nAriaVi', null, 'aria-label');
 
-        const reverseVietnamese = new Map(Object.entries(viAdditions).map(([key, value]) => [value, key]));
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-        while (walker.nextNode()) {
-            const node = walker.currentNode;
-            const parent = node.parentElement;
-            if (!parent || parent.closest('script,style,[data-i18n],.chat-bubble,.review-comment,.notranslate,[data-no-translate]')) continue;
-            if (!originalLooseText.has(node)) originalLooseText.set(node, node.data);
-            const original = originalLooseText.get(node);
-            const trimmed = original.trim();
-            const key = reverseVietnamese.get(trimmed);
-            if (key && explicit[key]) continue;
-            if (!key && (!translatableTags.has(parent.tagName) || !vietnameseText.test(trimmed) || parent.closest('.admin-review-card,.assigned-driver-card'))) continue;
-            const source = key ? (en[key] || trimmed) : trimmed;
-            add(source, key && en[key] ? 'en' : 'vi', translated => {
-                if (generation === languageGeneration && document.documentElement.lang === language) {
-                    if (key) explicit[key] = translated;
-                    node.data = original.replace(trimmed, translated);
-                }
-            });
-        }
-        document.querySelectorAll('[placeholder]:not([data-i18n-placeholder])').forEach(element => {
-            const original = element.dataset.loosePlaceholderVi || element.placeholder;
-            if (!vietnameseText.test(original)) return;
-            add(original, 'vi', translated => { if (generation === languageGeneration) element.placeholder = translated; });
-        });
-        [['[title]:not([data-i18n-title])','title'], ['[aria-label]:not([data-i18n-aria-label])','aria-label']].forEach(([selector, attribute]) => {
-            document.querySelectorAll(selector).forEach(element => {
-                if (element.closest('.review-comment,.chat-bubble')) return;
-                const original = element.getAttribute(attribute) || '';
-                if (!vietnameseText.test(original)) return;
-                add(original, 'vi', translated => { if (generation === languageGeneration) element.setAttribute(attribute, translated); });
-            });
-        });
+        // Only translate explicitly marked UI copy. Never scan personal content.
 
         const queue = Array.from(requests.values());
         const send = async batch => {
             try {
                 const response = await fetch('/api/localization/translate', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ targetLanguage: language, items: batch.map(({ id, text, sourceLanguage }) => ({ id, text, sourceLanguage })) })
+                    body: JSON.stringify({ targetLanguage: language, items: batch.map(({ id, text, sourceLanguage }) => ({ id, text, sourceLanguage })) }),
+                    signal: AbortSignal.timeout(20000)
                 });
                 if (!response.ok) return;
                 const data = await response.json();
@@ -187,7 +168,8 @@
                     changed = true;
                 });
                 if (changed && generation === languageGeneration) window.dispatchEvent(new CustomEvent('sgp:translationsready', { detail: { language } }));
-            } catch (error) { /* Keep the original text if the optional translation service is temporarily unavailable. */ }
+            } catch (error) { /* Keep editorial fallback copy when the optional service is unavailable. */ }
+            finally { batch.forEach(item => { pendingTranslations.delete(item.requestKey); failedTranslations.add(item.requestKey); }); }
         };
         (async () => {
             for (let index = 0; index < queue.length; index += 30) {
@@ -211,7 +193,7 @@
     function applyLanguage(language) {
         if (!languageNames[language]) language = 'vi';
         const generation = ++languageGeneration;
-        const selected = language === 'vi' ? null : (dictionaries[language] || {});
+        const selected = language === 'vi' ? viAdditions : { ...en, ...(dictionaries[language] || {}) };
         document.documentElement.lang = language;
         document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
         document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -231,7 +213,7 @@
             element.setAttribute('aria-label', selected?.[element.dataset.i18nAriaLabel] || element.dataset.i18nAriaVi);
         });
         translateLooseTextNodes(language, selected);
-        const titleKey = location.pathname === '/dashboard' ? 'my_bookings_title' : location.pathname === '/booking' ? 'booking_title' : null;
+        const titleKey = location.pathname === '/calendar' ? 'calendar' : location.pathname === '/dashboard' ? 'my_bookings_title' : location.pathname === '/booking' ? 'booking_title' : null;
         document.title = titleKey && selected?.[titleKey] ? `${selected[titleKey]} | SaiGonPhoenix` : originalDocumentTitle;
         const labels = themeLabels[language] || themeLabels.en;
         const themeSelect = document.querySelector('[data-theme-select]');

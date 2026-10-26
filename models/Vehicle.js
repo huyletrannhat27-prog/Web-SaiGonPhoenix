@@ -27,8 +27,10 @@ const vehicleSchema = new mongoose.Schema({
     },
     images: {
         type: [String],
-        default: ['/images/default-car.jpg']
+        default: ['/images/vehicle-placeholder.svg']
     },
+    interiorImages: { type: [String], default: [] },
+    spinImages: { type: [String], default: [] },
     description: {
         type: String,
         default: ''

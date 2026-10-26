@@ -18,19 +18,25 @@ exports.register = async (req, res, next) => {
     } catch (error) { next(error); }
 };
 
-exports.showLogin = (req, res) => req.session.userId ? res.redirect('/dashboard') : res.render('login', { title: 'Đăng nhập', error: null, form: {} });
+exports.showLogin = (req, res) => {
+    if (req.query.next === '/calendar') req.session.returnTo = '/calendar';
+    return req.session.userId ? res.redirect(req.session.returnTo || '/dashboard') : res.render('login', { title: 'Đăng nhập', error: null, form: {} });
+};
 
 exports.login = async (req, res, next) => {
     try {
         const user = await User.findOne({ email: req.body.email?.toLowerCase().trim() });
         const form = { email: req.body.email?.trim() || '' };
         if (!user || !user.isActive || !await user.comparePassword(req.body.password || '')) return res.status(401).render('login', { title: 'Đăng nhập', error: 'Email hoặc mật khẩu không đúng.', form });
+        const returnTo = req.session.returnTo === '/calendar' ? '/calendar' : null;
+        await new Promise((resolve, reject) => req.session.regenerate(error => error ? reject(error) : resolve()));
         req.session.userId = user._id.toString();
         req.session.username = user.username;
         req.session.email = user.email;
         req.session.role = user.role;
         req.flash('success', `Xin chào ${user.username}!`);
-        res.redirect(user.role === 'admin' ? '/admin' : user.role === 'driver' ? '/driver' : '/dashboard');
+        await new Promise((resolve, reject) => req.session.save(error => error ? reject(error) : resolve()));
+        res.redirect(returnTo || (user.role === 'admin' ? '/admin' : user.role === 'driver' ? '/driver' : '/dashboard'));
     } catch (error) { next(error); }
 };
 
