@@ -5,7 +5,8 @@ const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const path = require('path');
 const ejsMate = require('ejs-mate');
-require('dotenv').config();
+const { databaseErrorMessage } = require('./config/runtime');
+const mongoose = require('mongoose');
 
 const connectDB = require('./config/database');
 const routes = require('./routes');
@@ -16,7 +17,6 @@ const { syncActiveFlights } = require('./services/flightTracker');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/SaiGonPhoenix';
 
 // CORS configuration for Next.js Frontend
 app.use(cors({
@@ -33,16 +33,39 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.get('/healthz', (req, res) => {
+    const ready = mongoose.connection.readyState === 1 && app.locals.startupReady !== false;
+    res.set('Cache-Control', 'no-store').status(ready ? 200 : 503).json({ status: ready ? 'ready' : 'unavailable' });
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session is kept for legacy views, but we implement JWT in authController
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'change-this-secret',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl, collectionName: 'sessions' }),
-    cookie: { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 }
-}));
+// Reuse the connected Mongoose client. Never start a second, unawaited DNS
+// connection at module load (connect-mongo's mongoUrl option does that).
+let sessionMiddlewarePromise;
+function initializeSession() {
+    if (!sessionMiddlewarePromise) {
+        sessionMiddlewarePromise = (async () => {
+            await mongoose.connection.db.collection('sessions').createIndex({ expires: 1 }, { expireAfterSeconds: 0 });
+            const store = MongoStore.create({ client: mongoose.connection.getClient(), dbName: mongoose.connection.name, collectionName: 'sessions', autoRemove: 'disabled' });
+            store.on('error', error => console.error(databaseErrorMessage(error)));
+            return session({
+                secret: process.env.SESSION_SECRET || 'change-this-secret',
+                resave: false,
+                saveUninitialized: false,
+                store,
+                cookie: { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', maxAge: 7 * 24 * 60 * 60 * 1000 }
+            });
+        })().catch(error => { sessionMiddlewarePromise = null; throw error; });
+    }
+    return sessionMiddlewarePromise;
+}
+app.use((req, res, next) => {
+    if (mongoose.connection.readyState !== 1 || app.locals.startupReady === false) {
+        res.set('Retry-After', '10');
+        return res.status(503).send('Dịch vụ đang kết nối cơ sở dữ liệu. Vui lòng thử lại sau.');
+    }
+    initializeSession().then(middleware => middleware(req, res, next)).catch(next);
+});
 app.use(flash());
 app.use((req, res, next) => {
     res.locals.flash = req.flash();
@@ -93,9 +116,25 @@ app.use((err, req, res, next) => {
 });
 
 async function start() {
-    await connectDB();
-    await seedInitialData();
-    app.listen(PORT, () => console.log(`SaiGonPhoenix API Server: http://localhost:${PORT}`));
+    app.locals.startupReady = false;
+    const server = await new Promise((resolve, reject) => {
+        const listener = app.listen(PORT, '0.0.0.0', () => {
+            console.log(`HTTP listening on 0.0.0.0:${listener.address().port}; waiting for MongoDB.`);
+            resolve(listener);
+        });
+        listener.once('error', reject);
+    });
+    try {
+        await connectDB();
+        await initializeSession();
+        await seedInitialData();
+        app.locals.startupReady = true;
+        console.log('SaiGonPhoenix ready. Health check: /healthz');
+    } catch (error) {
+        server.close();
+        await mongoose.disconnect().catch(() => {});
+        throw error;
+    }
 
     const maintenanceMinutes = Math.max(Number(process.env.MAINTENANCE_INTERVAL_MINUTES || 10), 2);
     const runMaintenance = async () => {
@@ -103,8 +142,15 @@ async function start() {
         catch (error) { console.error('Tác vụ nền:', error.message); }
     };
     runMaintenance();
-    setInterval(runMaintenance, maintenanceMinutes * 60 * 1000).unref();
+    const maintenanceTimer = setInterval(runMaintenance, maintenanceMinutes * 60 * 1000);
+    maintenanceTimer.unref();
+    server.once('close', () => clearInterval(maintenanceTimer));
+    return server;
 }
 
-if (require.main === module) start().catch(error => { console.error(error); process.exit(1); });
+if (require.main === module) start().catch(error => {
+    console.error(`Startup failed: ${error.code === 'EADDRINUSE' ? 'Cổng HTTP đang được sử dụng.' : databaseErrorMessage(error)}`);
+    process.exit(1);
+});
 module.exports = app;
+module.exports.start = start;

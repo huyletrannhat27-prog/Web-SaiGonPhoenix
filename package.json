@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "test": "node scripts/smoke-test.js",
     "test:calendar": "node scripts/calendar-test.js",
-    "test:gallery": "node scripts/vehicle-gallery-test.js"
+    "test:gallery": "node scripts/vehicle-gallery-test.js",
+    "test:startup": "node scripts/startup-test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

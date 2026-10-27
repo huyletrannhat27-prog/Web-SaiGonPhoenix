@@ -11,6 +11,19 @@ Website đặt xe đưa đón sân bay bằng Node.js, Express, EJS và MongoDB.
 
 Lần chạy đầu hệ thống tự tạo tài khoản admin và bốn xe mẫu. Muốn xem dữ liệu bằng MongoDB Compass, kết nối tới URI trong `MONGODB_URI` (mặc định `mongodb://127.0.0.1:27017/SaiGonPhoenix`). Các collection chính: `users`, `vehicles`, `bookings`, `sessions`.
 
+## Triển khai trên Render và lỗi MongoDB DNS
+
+- Build Command: `npm ci`. Start Command: `npm start`. Health Check Path: `/healthz`.
+- Trong **Render → Environment**, đặt `NODE_ENV=production`, `MONGODB_URI`, `SESSION_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` và `APP_BASE_URL` theo môi trường thực tế. Giữ `PORT` do Render cấp; ứng dụng lắng nghe trên `0.0.0.0:$PORT`.
+- Production/Render không đọc `.env` của máy lập trình. Thiếu `MONGODB_URI` sẽ báo lỗi cấu hình, không tự kết nối `localhost`. `.env` được giữ ở máy local và không còn được theo dõi trong Git; việc này không xóa các phiên bản trước khỏi lịch sử Git.
+- `querySrv ENOTFOUND _mongodb._tcp.<cluster>.mongodb.net` nghĩa là không tìm được DNS SRV của cluster, xảy ra trước khi xác thực mật khẩu. Trong Atlas, kiểm tra cluster tồn tại và đang chạy (Resume nếu đang paused), mở **Connect → Drivers**, sao chép lại URI chính xác và cập nhật `MONGODB_URI` trên Render. Không tự đoán hostname hoặc chỉ đổi `mongodb+srv` thành `mongodb`.
+- Dùng database user của Atlas và mã hóa URL các ký tự đặc biệt trong username/password. Sau khi DNS đúng, nếu vẫn timeout, kiểm tra **Network Access** cho các IP outbound của dịch vụ Render. Không đăng URI có mật khẩu vào Git hoặc log.
+- Lưu biến môi trường rồi deploy commit mới nhất. Log thành công: `MongoDB connected successfully.` và `SaiGonPhoenix ready. Health check: /healthz`; endpoint trả 200 chỉ khi hoàn tất khởi động và kết nối database còn hoạt động, ngược lại trả 503.
+- Kết nối lưu session dùng chung MongoClient của Mongoose, tạo sau khi kết nối thành công. DNS lỗi được xử lý bởi luồng khởi động, không còn một kết nối `connect-mongo` chạy riêng gây unhandled rejection khi nạp file.
+- Chạy `npm run test:startup` để kiểm tra lỗi DNS, thiếu cấu hình production, cổng HTTP, readiness, session TTL và mất kết nối DB. Dùng MongoDB local và database thử nghiệm riêng.
+
+Tham khảo: [MongoDB Atlas connection troubleshooting](https://www.mongodb.com/docs/atlas/troubleshoot-connection/), [Render port binding](https://render.com/docs/web-services#port-binding), [Render health checks](https://render.com/docs/health-checks).
+
 ## Chức năng
 
 ### Lịch cá nhân và giao diện mới
@@ -25,8 +38,6 @@ Lần chạy đầu hệ thống tự tạo tài khoản admin và bốn xe mẫ
 Kiểm thử phần mới bằng `npm run test:calendar` (Node.js 24, MongoDB local cổng 27017). Bộ kiểm thử tự tạo cơ sở dữ liệu `sgp_calendar_test_*`, kiểm tra API, phân quyền, biểu mẫu, DOM và ngôn ngữ rồi xóa đúng cơ sở dữ liệu thử nghiệm đó. Không dùng dữ liệu ứng dụng đang chạy. Kiểm thử DOM không thay thế việc kiểm tra bố cục trực tiếp trên trình duyệt.
 
 Các route EJS tiếp tục dùng đăng nhập session trong `controllers/authController.js`. Bản controller JWT có sẵn khi bắt đầu nâng cấp được giữ riêng tại `controllers/authApiController.js` để tiếp tục phần frontend API sau này; chưa gắn vào các route EJS.
-
-### Đặt xe và quản trị
 
 ### Ảnh xe, nội thất và chế độ xoay
 
